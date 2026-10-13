@@ -30,8 +30,8 @@ function plate(side: "1" | "2", id: string | null): string {
 
 export function titleHtml(error: string): string {
   return `<section class="title pixel">
-    <p class="kicker">Player select</p>
-    <h1>CINDER<br>ALLEY</h1>
+    <p class="kicker">World Warrior</p>
+    <h1>STREET<br>FIGHTER II</h1>
     <div class="menu">
       <button type="button" class="primary" data-act="online">Fight online</button>
       <button type="button" data-act="local">Versus</button>

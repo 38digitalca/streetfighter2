@@ -42,14 +42,14 @@ Press `` ` `` during a fight to show hitboxes. Escape leaves the match.
 
 ## Fighters
 
-- **Vesper** — fast, with a Crescent Dart.
-- **Juno** — gold gloves and a rising hook.
-- **Coil** — a long low slide, and a dive from the air.
-- **Reed** — a heavier, slower dart.
-- **Brass** — slow and heavy, with a Rising Hook that launches.
-- **Moth** — even tools and a two-hit Lantern Flare.
-- **Ash** — a wider, colder flare.
-- **Kite** — a low slide on the ground and a Dive Spike from the air.
+- **Ryu** — Hadoken.
+- **E. Honda** — sumo headbutt.
+- **Blanka** — electricity.
+- **Guile** — Sonic Boom.
+- **Ken** — Shoryuken.
+- **Chun-Li** — spinning bird slide.
+- **Zangief** — screw pile driver.
+- **Dhalsim** — Yoga Flame.
 
 On the player select screen, click a portrait for 1P and right-click for 2P. The world map marks each fighter's home.
 

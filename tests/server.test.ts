@@ -61,9 +61,9 @@ test("two browsers can create, join, and start a synced match", async () => {
     const full = await once<{ type: string; message: string }>(stranger, (msg) => msg.type === "error");
     assert.match(full.message, /two fighters/);
 
-    host.send(JSON.stringify({ type: "pick", character: "vesper" }));
+    host.send(JSON.stringify({ type: "pick", character: "ryu" }));
     host.send(JSON.stringify({ type: "ready", ready: true }));
-    guest.send(JSON.stringify({ type: "pick", character: "moth" }));
+    guest.send(JSON.stringify({ type: "pick", character: "ken" }));
     guest.send(JSON.stringify({ type: "ready", ready: true }));
 
     const started = await once<{ type: string; epoch: number; state: { phase: string; fighters: { name: string; charId: string }[] } }>(
@@ -71,7 +71,7 @@ test("two browsers can create, join, and start a synced match", async () => {
       (msg) => msg.type === "state",
     );
     assert.equal(started.state.phase, "intro");
-    assert.equal(started.state.fighters[0].charId, "vesper");
+    assert.equal(started.state.fighters[0].charId, "ryu");
     assert.equal(started.state.fighters[1].name, "Bea");
     assert.ok(started.epoch >= 1);
 

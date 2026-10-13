@@ -99,7 +99,7 @@ export function overlap(a: Rect, b: Rect): boolean {
 }
 
 function makeFighter(slot: 0 | 1, who: Combatant, wins = 0): Fighter {
-  const ch = CHARACTERS[who.charId] ?? CHARACTERS.vesper;
+  const ch = CHARACTERS[who.charId] ?? CHARACTERS.ryu;
   return {
     slot,
     name: who.name,

@@ -24,13 +24,13 @@ function mv(
 }
 
 const CORE: Record<string, Character> = {
-  vesper: {
-    id: "vesper",
-    name: "Vesper",
-    title: "Night courier",
-    blurb: "Fast hands and a crescent dart. Thin health, so she has to leave first.",
-    home: { x: 0.5, y: 0.46, label: "LAGOS" },
-    specialName: "Crescent Dart",
+  ryu: {
+    id: "ryu",
+    name: "Ryu",
+    title: "Wandering warrior",
+    blurb: "Hadoken from a distance.",
+    home: { x: 0.8, y: 0.34, label: "JAPAN" },
+    specialName: "Hadoken",
     specialKind: "dart",
     tempo: "Fleet",
     power: "Light",
@@ -38,16 +38,16 @@ const CORE: Record<string, Character> = {
     air: 4.1,
     jump: -13.7,
     maxHp: 100,
-    hair: "ponytail",
+    hair: "crop",
     body: "slim",
     palette: {
-      skin: "#f0c7a4",
-      hair: "#2a1844",
-      cloth: "#3a2468",
-      trim: "#c084fc",
-      accent: "#e9d5ff",
-      metal: "#ddd6fe",
-      sole: "#1e1033",
+      skin: "#f0c09a",
+      hair: "#1a120c",
+      cloth: "#f4f4f6",
+      trim: "#e02028",
+      accent: "#e02028",
+      metal: "#f2f2f2",
+      sole: "#1a120c",
     },
     moves: {
       punch: mv({ startup: 5, active: 4, recovery: 11, damage: 7, hitstun: 16, blockstun: 9, push: 5, w: 44, h: 24, lift: 96 }),
@@ -72,13 +72,13 @@ const CORE: Record<string, Character> = {
       }),
     },
   },
-  brass: {
-    id: "brass",
-    name: "Brass",
-    title: "Dock brawler",
-    blurb: "Slow walk, heavy hands, and a rising hook that puts people on the curb.",
-    home: { x: 0.18, y: 0.38, label: "HAVANA" },
-    specialName: "Rising Hook",
+  ken: {
+    id: "ken",
+    name: "Ken",
+    title: "American master",
+    blurb: "Same fireball school, but the Shoryuken is the round ender.",
+    home: { x: 0.16, y: 0.28, label: "U.S.A." },
+    specialName: "Shoryuken",
     specialKind: "riser",
     tempo: "Measured",
     power: "Heavy",
@@ -86,16 +86,16 @@ const CORE: Record<string, Character> = {
     air: 3.1,
     jump: -12.5,
     maxHp: 114,
-    hair: "crop",
+    hair: "mane",
     body: "broad",
     palette: {
-      skin: "#e0b088",
-      hair: "#2a2118",
-      cloth: "#6b3a22",
-      trim: "#f3d7a1",
-      accent: "#f59e0b",
-      metal: "#fde68a",
-      sole: "#1c1410",
+      skin: "#f0c09a",
+      hair: "#f0d060",
+      cloth: "#d41820",
+      trim: "#f0d060",
+      accent: "#ffd24a",
+      metal: "#f4f4f4",
+      sole: "#1a120c",
     },
     moves: {
       punch: mv({ startup: 7, active: 4, recovery: 15, damage: 11, hitstun: 18, blockstun: 11, push: 7, w: 48, h: 26, lift: 98 }),
@@ -123,13 +123,13 @@ const CORE: Record<string, Character> = {
       }),
     },
   },
-  kite: {
-    id: "kite",
-    name: "Kite",
-    title: "Rooftop runner",
-    blurb: "A low slide on the ground and a diving spike from the air. Guess wrong.",
-    home: { x: 0.84, y: 0.34, label: "SEOUL" },
-    specialName: "Dive Spike",
+  honda: {
+    id: "honda",
+    name: "E. Honda",
+    title: "Sumo",
+    blurb: "Hundred-hand slap on the ground, and a diving headbutt from the air.",
+    home: { x: 0.78, y: 0.3, label: "JAPAN" },
+    specialName: "Headbutt",
     specialKind: "dive",
     tempo: "Quick",
     power: "Light",
@@ -137,16 +137,16 @@ const CORE: Record<string, Character> = {
     air: 4.4,
     jump: -15,
     maxHp: 94,
-    hair: "cap",
-    body: "lean",
+    hair: "bun",
+    body: "broad",
     palette: {
-      skin: "#f3d2b5",
-      hair: "#102028",
-      cloth: "#155e75",
-      trim: "#ecfeff",
-      accent: "#22d3ee",
-      metal: "#a5f3fc",
-      sole: "#082f38",
+      skin: "#f0c09a",
+      hair: "#1a120c",
+      cloth: "#f4f4f6",
+      trim: "#2456c8",
+      accent: "#2456c8",
+      metal: "#f0c09a",
+      sole: "#1a120c",
     },
     moves: {
       punch: mv({ startup: 5, active: 4, recovery: 11, damage: 7, hitstun: 15, blockstun: 9, push: 5, w: 42, h: 24, lift: 94 }),
@@ -189,13 +189,13 @@ const CORE: Record<string, Character> = {
       }),
     },
   },
-  moth: {
-    id: "moth",
-    name: "Moth",
-    title: "Lantern duelist",
-    blurb: "Even tools and a two-hit flare that fills the space in front of her.",
-    home: { x: 0.57, y: 0.4, label: "CAIRO" },
-    specialName: "Lantern Flare",
+  blanka: {
+    id: "blanka",
+    name: "Blanka",
+    title: "Wild beast",
+    blurb: "The electric shock hits twice and fills the space in front of him.",
+    home: { x: 0.3, y: 0.42, label: "BRAZIL" },
+    specialName: "Electricity",
     specialKind: "flare",
     tempo: "Even",
     power: "Medium",
@@ -203,16 +203,16 @@ const CORE: Record<string, Character> = {
     air: 3.6,
     jump: -13.3,
     maxHp: 104,
-    hair: "bob",
-    body: "dancer",
+    hair: "mane",
+    body: "broad",
     palette: {
-      skin: "#f0c8aa",
-      hair: "#4a2038",
-      cloth: "#7f1d3a",
-      trim: "#fde68a",
-      accent: "#fb7185",
-      metal: "#fecdd3",
-      sole: "#2a1018",
+      skin: "#7dba3a",
+      hair: "#f08a14",
+      cloth: "#f08a14",
+      trim: "#ffe14a",
+      accent: "#ffe14a",
+      metal: "#7dba3a",
+      sole: "#1a4010",
     },
     moves: {
       punch: mv({ startup: 6, active: 4, recovery: 12, damage: 8, hitstun: 16, blockstun: 10, push: 5, w: 44, h: 24, lift: 94 }),
@@ -251,84 +251,84 @@ function tune(base: Character, patch: Partial<Character> & Pick<Character, "id" 
   };
 }
 
-const reedMoves = structuredClone(CORE.vesper.moves);
+const reedMoves = structuredClone(CORE.ryu.moves);
 if (reedMoves.special.bolt) reedMoves.special.bolt = { speed: 7.6, damage: 13, lift: 96 };
 reedMoves.special.cooldown = 92;
 
-const junoMoves = structuredClone(CORE.brass.moves);
+const junoMoves = structuredClone(CORE.ken.moves);
 junoMoves.special.damage = 16;
 junoMoves.special.cooldown = 92;
 junoMoves.special.launch = -10;
 
-const coilMoves = structuredClone(CORE.kite.moves);
+const coilMoves = structuredClone(CORE.honda.moves);
 coilMoves.special.slide = 7.2;
 coilMoves.special.damage = 13;
 
-const ashMoves = structuredClone(CORE.moth.moves);
+const ashMoves = structuredClone(CORE.blanka.moves);
 ashMoves.special.damage = 9;
 ashMoves.special.cooldown = 96;
 
 export const CHARACTERS: Record<string, Character> = {
   ...CORE,
-  reed: tune(CORE.vesper, {
-    id: "reed",
-    name: "Reed",
-    title: "High collar",
-    blurb: "A heavier dart and a longer coat. She wins the firefight and loses the sprint.",
-    home: { x: 0.44, y: 0.28, label: "LISBON" },
-    specialName: "Long Dart",
-    hair: "bun",
-    body: "slim",
+  guile: tune(CORE.ryu, {
+    id: "guile",
+    name: "Guile",
+    title: "Air force",
+    blurb: "Sonic Boom travels slower and hits harder. Flash Kick is not this build.",
+    home: { x: 0.2, y: 0.24, label: "U.S.A." },
+    specialName: "Sonic Boom",
+    hair: "crop",
+    body: "broad",
     walk: 3.85,
     maxHp: 108,
-    palette: { skin: "#e8c4a4", hair: "#1c140e", cloth: "#1f3d32", trim: "#d6c4a1", accent: "#86efac", metal: "#bbf7d0", sole: "#102018" },
+    palette: { skin: "#f0c09a", hair: "#f0d060", cloth: "#2f6b32", trim: "#f4f4f6", accent: "#2456c8", metal: "#d8d8d8", sole: "#1a120c" },
     moves: reedMoves,
   }),
-  juno: tune(CORE.brass, {
-    id: "juno",
-    name: "Juno",
-    title: "Gold gloves",
-    blurb: "Walks in, plants, and lets the rising hook finish the conversation.",
-    home: { x: 0.22, y: 0.26, label: "OTTAWA" },
-    specialName: "Gold Hook",
-    hair: "mane",
+  zangief: tune(CORE.ken, {
+    id: "zangief",
+    name: "Zangief",
+    title: "Red cyclone",
+    blurb: "Walks in and ends the round with a spinning pile driver.",
+    home: { x: 0.55, y: 0.2, label: "U.S.S.R." },
+    specialName: "Screw Pile",
+    hair: "crop",
     body: "broad",
-    walk: 3.35,
-    maxHp: 110,
-    palette: { skin: "#c68642", hair: "#1a120c", cloth: "#111111", trim: "#f5d76e", accent: "#fbbf24", metal: "#fde68a", sole: "#1c1408" },
+    walk: 3.15,
+    maxHp: 118,
+    palette: { skin: "#e0a070", hair: "#c01018", cloth: "#c01018", trim: "#f0d060", accent: "#c01018", metal: "#e8c090", sole: "#1a120c" },
     moves: junoMoves,
   }),
-  coil: tune(CORE.kite, {
-    id: "coil",
-    name: "Coil",
-    title: "Hooded slide",
-    blurb: "Hood up. A longer low slide, and the same dive if you jump away.",
-    home: { x: 0.78, y: 0.46, label: "MANILA" },
-    specialName: "Hood Slide",
-    hair: "hood",
-    body: "lean",
+  chunli: tune(CORE.honda, {
+    id: "chunli",
+    name: "Chun-Li",
+    title: "Interpol",
+    blurb: "A long low slide, and a diving kick if you try to jump out.",
+    home: { x: 0.7, y: 0.32, label: "CHINA" },
+    specialName: "Spinning Bird",
+    hair: "bun",
+    body: "dancer",
     walk: 4.35,
     maxHp: 96,
-    palette: { skin: "#f0d0b0", hair: "#101820", cloth: "#14532d", trim: "#d9f99d", accent: "#84cc16", metal: "#ecfccb", sole: "#052e16" },
+    palette: { skin: "#f0c09a", hair: "#1a120c", cloth: "#2456c8", trim: "#f4f4f6", accent: "#f0d060", metal: "#f4f4f6", sole: "#f4f4f6" },
     moves: coilMoves,
   }),
-  ash: tune(CORE.moth, {
-    id: "ash",
-    name: "Ash",
-    title: "Cold flare",
-    blurb: "Takes one step and fills the lane with a two-hit flare.",
-    home: { x: 0.4, y: 0.2, label: "REYKJAVIK" },
-    specialName: "Cold Flare",
-    hair: "braid",
-    body: "dancer",
+  dhalsim: tune(CORE.blanka, {
+    id: "dhalsim",
+    name: "Dhalsim",
+    title: "Yoga master",
+    blurb: "Yoga Flame covers the space in front of him. Stay out, or get in after it ends.",
+    home: { x: 0.62, y: 0.38, label: "INDIA" },
+    specialName: "Yoga Flame",
+    hair: "crop",
+    body: "lean",
     walk: 3.45,
-    maxHp: 110,
-    palette: { skin: "#f3d5c4", hair: "#d7dde8", cloth: "#334155", trim: "#e2e8f0", accent: "#93c5fd", metal: "#f8fafc", sole: "#0f172a" },
+    maxHp: 100,
+    palette: { skin: "#c68642", hair: "#1a120c", cloth: "#f0d060", trim: "#e02028", accent: "#f08a14", metal: "#e8c090", sole: "#1a120c" },
     moves: ashMoves,
   }),
 };
 
-export const ROSTER = ["vesper", "juno", "coil", "reed", "brass", "moth", "ash", "kite"] as const;
+export const ROSTER = ["ryu", "honda", "blanka", "guile", "ken", "chunli", "zangief", "dhalsim"] as const;
 
 export function getCharacter(id: string): Character | null {
   return CHARACTERS[id] ?? null;

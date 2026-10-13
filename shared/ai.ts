@@ -27,7 +27,7 @@ export function cpuInput(state: MatchState, slot: 0 | 1, gentle = false): Input 
   if (shouldBlock) {
     if (me.facing === 1) input.left = true;
     else input.right = true;
-    const low = opp.action === "crouchKick" || (opp.action === "special" && opp.charId === "kite" && opp.onGround);
+    const low = opp.action === "crouchKick" || (opp.action === "special" && (opp.charId === "honda" || opp.charId === "chunli") && opp.onGround);
     if (low) input.down = true;
     return input;
   }

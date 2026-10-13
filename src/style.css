@@ -318,44 +318,46 @@ label { display: grid; gap: 0.35rem; font-size: 0.86rem; font-weight: 600; margi
 }
 .plate {
   position: absolute;
-  bottom: 15%;
-  width: 26%;
+  bottom: 12%;
+  width: 24%;
   margin: 0;
 }
-.plate-1 { left: 1.5%; }
-.plate-2 { right: 1.5%; }
+.plate-1 { left: 1%; }
+.plate-2 { right: 1%; }
 .plate canvas {
   width: 100%;
   height: auto;
   display: block;
   image-rendering: pixelated;
-  background: #163884;
-  border: 4px solid #071226;
-  box-shadow: 4px 4px 0 #071226;
+  image-rendering: crisp-edges;
+  background: transparent;
+  border: 0;
 }
-.plate-2 canvas { transform: none; }
 .nameplate {
+  position: absolute;
+  bottom: 2%;
   display: flex;
-  align-items: flex-end;
-  gap: 8px;
-  margin-top: 6px;
+  flex-direction: column;
+  gap: 4px;
   font-family: "Press Start 2P", monospace;
-  text-shadow: 2px 2px 0 #071226, -1px 0 #071226;
+  text-shadow: 3px 3px 0 #071226, -2px 0 #071226, 0 -2px #071226;
 }
-.plate-1 .nameplate { color: #ff3b30; }
-.plate-2 .nameplate { color: #3ec0ff; justify-content: flex-end; }
-.who { color: #fff; font-size: 10px; }
-.fname { font-size: clamp(11px, 1.8vw, 16px); }
+.plate-1 .nameplate { left: 6%; align-items: flex-start; }
+.plate-2 .nameplate { right: 6%; align-items: flex-end; }
+.who { color: #f7f4ea; font-size: 11px; }
+.plate-1 .fname { color: #ff2a2a; font-size: clamp(16px, 2.4vw, 26px); }
+.plate-2 .fname { color: #3ec0ff; font-size: clamp(16px, 2.4vw, 26px); }
 .faces {
   position: absolute;
   left: 50%;
-  bottom: 16%;
+  bottom: 18%;
   transform: translateX(-50%);
-  width: 42%;
+  width: 36%;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
+  gap: 3px;
   pointer-events: auto;
+  z-index: 2;
 }
 .faces button {
   padding: 0;

@@ -17,8 +17,8 @@ function hold(partial: Partial<Input>): Input {
 
 function fresh(): MatchState {
   return createMatch(
-    { name: "Vesper", charId: "vesper" },
-    { name: "Brass", charId: "brass" },
+    { name: "Ryu", charId: "ryu" },
+    { name: "Ken", charId: "ken" },
   );
 }
 
@@ -127,11 +127,11 @@ test("a jumping kick is an overhead", () => {
   assert.equal(standing.fighters[1].action, "block");
 });
 
-test("vesper's dart travels and hits", () => {
+test("ryu's hadoken travels and hits", () => {
   const state = fresh();
   place(state, 520);
   state.fighters[0].action = "special";
-  state.fighters[0].frame = CHARACTERS.vesper.moves.special.startup;
+  state.fighters[0].frame = CHARACTERS.ryu.moves.special.startup;
   const hp = state.fighters[1].hp;
   for (let i = 0; i < 80; i++) step(state, [blank(), blank()]);
   assert.ok(state.fighters[1].hp < hp);
@@ -140,13 +140,13 @@ test("vesper's dart travels and hits", () => {
 
 test("opposing darts erase each other", () => {
   const state = createMatch(
-    { name: "Vesper", charId: "vesper" },
-    { name: "Vesper", charId: "vesper" },
+    { name: "Ryu", charId: "ryu" },
+    { name: "Ryu", charId: "ryu" },
   );
   place(state, 760);
   for (const f of state.fighters) {
     f.action = "special";
-    f.frame = CHARACTERS.vesper.moves.special.startup;
+    f.frame = CHARACTERS.ryu.moves.special.startup;
     f.spawned = false;
   }
   state.fighters[0].facing = 1;
@@ -159,12 +159,12 @@ test("opposing darts erase each other", () => {
 
 test("a rising hook launches", () => {
   const state = createMatch(
-    { name: "Brass", charId: "brass" },
-    { name: "Kite", charId: "kite" },
+    { name: "Ken", charId: "ken" },
+    { name: "E. Honda", charId: "honda" },
   );
   place(state);
   state.fighters[0].action = "special";
-  state.fighters[0].frame = CHARACTERS.brass.moves.special.startup;
+  state.fighters[0].frame = CHARACTERS.ken.moves.special.startup;
   step(state, [blank(), blank()]);
   assert.equal(state.fighters[1].action, "launch");
   assert.equal(state.fighters[1].onGround, false);
@@ -200,7 +200,7 @@ test("double ko awards no round", () => {
   place(state);
   arm(state, "punch");
   state.fighters[1].action = "punch";
-  state.fighters[1].frame = CHARACTERS.brass.moves.punch.startup;
+  state.fighters[1].frame = CHARACTERS.ken.moves.punch.startup;
   state.fighters[0].hp = 1;
   state.fighters[1].hp = 1;
   step(state, [blank(), blank()]);

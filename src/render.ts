@@ -256,7 +256,7 @@ function paintLocal(ctx: CanvasRenderingContext2D, f: Fighter, tick: number) {
   const cloth = flash ? "#fff6ee" : ch.palette.cloth;
   const skin = flash ? "#fff6ee" : ch.palette.skin;
   const tw = torsoWidth(ch.body);
-  const hand = ch.id === "brass" ? ch.palette.metal : skin;
+  const hand = ch.id === "ken" || ch.id === "honda" ? ch.palette.metal : skin;
 
   ctx.save();
   if (f.action === "down" || (f.action === "ko" && f.onGround)) ctx.rotate(-1.2);
@@ -264,7 +264,7 @@ function paintLocal(ctx: CanvasRenderingContext2D, f: Fighter, tick: number) {
   if (f.action === "hit") ctx.scale(1.06, 0.94);
   ctx.rotate(pose.lean);
 
-  if (ch.id === "vesper" || ch.id === "moth") {
+  if (ch.id === "chunli") {
     ctx.fillStyle = cloth;
     ctx.beginPath();
     ctx.moveTo(-tw / 2, -70 + pose.drop);
@@ -299,15 +299,17 @@ function paintLocal(ctx: CanvasRenderingContext2D, f: Fighter, tick: number) {
   limb(ctx, 6, -6, pose.legF, pose.legLen, 12, cloth, ch.palette.sole, null);
   limb(ctx, 6, -80 + pose.drop, pose.armF, pose.armLen, 9, cloth, null, hand);
 
-  if (ch.id === "kite") {
-    ctx.strokeStyle = ch.palette.accent;
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.moveTo(4, hy + 16);
-    ctx.quadraticCurveTo(-20, hy + 30 + Math.sin(tick / 5) * 6, -8, hy + 48);
-    ctx.stroke();
+  if (ch.id === "ryu") {
+    ctx.fillStyle = ch.palette.trim;
+    ctx.fillRect(-10, hy - 6, 22, 4);
   }
-  if (ch.id === "moth") {
+  if (ch.id === "honda") {
+    ctx.fillStyle = ch.palette.hair;
+    ctx.beginPath();
+    ctx.arc(-2, hy - 18, 5, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  if (ch.id === "blanka") {
     ctx.save();
     ctx.shadowColor = ch.palette.accent;
     ctx.shadowBlur = 12;
@@ -669,7 +671,7 @@ export function drawPortrait(ctx: CanvasRenderingContext2D, charId: string) {
   ctx.arc(canvas.width / 2, canvas.height * 0.72, 36, 0, Math.PI * 2);
   ctx.fill();
   ctx.globalAlpha = 1;
-  const match = createMatch({ name: ch.name, charId }, { name: "Rival", charId: "brass" });
+  const match = createMatch({ name: ch.name, charId }, { name: "Rival", charId: "ken" });
   const f = match.fighters[0];
   const scale = canvas.width / 150;
   ctx.save();

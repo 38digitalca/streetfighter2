@@ -1,85 +1,63 @@
-import { CHARACTERS, ROSTER } from "../shared/characters";
-import type { Character, Hair } from "../shared/types";
+import { CHARACTERS } from "../shared/characters";
 import { VIEW_H, VIEW_W } from "../shared/types";
+import { blitPortrait, PORTRAITS } from "./portraits";
 
 const LAND: number[][][] = [
-  [[6, 34], [14, 16], [26, 14], [34, 22], [36, 38], [28, 52], [18, 56], [12, 48], [8, 40]],
-  [[20, 58], [30, 54], [34, 70], [28, 92], [22, 88], [16, 72]],
-  [[40, 22], [48, 16], [56, 18], [58, 30], [50, 36], [42, 32]],
-  [[44, 38], [56, 36], [62, 48], [58, 78], [48, 84], [42, 64], [42, 48]],
-  [[56, 18], [70, 12], [86, 16], [92, 28], [88, 46], [74, 48], [62, 38], [58, 28]],
-  [[78, 62], [90, 58], [94, 74], [80, 78], [74, 68]],
+  [[4, 28], [12, 16], [22, 14], [32, 20], [34, 36], [26, 48], [16, 52], [8, 44], [4, 36]],
+  [[18, 54], [28, 50], [32, 68], [26, 88], [18, 84], [14, 66]],
+  [[40, 20], [48, 16], [56, 20], [54, 32], [46, 34], [40, 28]],
+  [[44, 36], [54, 34], [60, 50], [56, 76], [46, 82], [42, 58]],
+  [[56, 16], [68, 12], [84, 16], [92, 28], [88, 44], [74, 46], [62, 36], [56, 26]],
+  [[76, 58], [88, 56], [92, 70], [80, 74], [74, 64]],
 ];
 
-function px(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, color: string) {
-  ctx.fillStyle = color;
-  ctx.fillRect(x, y, w, h);
+const GREEN: number[][][] = [
+  [[10, 30], [20, 24], [24, 36], [14, 40]],
+  [[46, 24], [52, 22], [52, 30], [46, 30]],
+  [[48, 48], [54, 44], [56, 60], [48, 64]],
+  [[64, 22], [78, 18], [80, 34], [66, 36]],
+];
+
+interface Flag {
+  x: number;
+  y: number;
+  label: string;
+  paint: (ctx: CanvasRenderingContext2D) => void;
+  ids: string[];
 }
 
-function hairPixels(ctx: CanvasRenderingContext2D, style: Hair, p: Character["palette"]) {
-  if (style === "ponytail") {
-    px(ctx, 6, 2, 14, 6, p.hair);
-    px(ctx, 1, 6, 5, 12, p.hair);
-  } else if (style === "crop") {
-    px(ctx, 6, 2, 13, 4, p.hair);
-  } else if (style === "cap") {
-    px(ctx, 4, 1, 16, 5, p.cloth);
-    px(ctx, 2, 5, 18, 2, p.cloth);
-    px(ctx, 16, 2, 5, 2, p.accent);
-  } else if (style === "bun") {
-    px(ctx, 6, 2, 13, 4, p.hair);
-    px(ctx, 2, 1, 6, 6, p.hair);
-  } else if (style === "mane") {
-    px(ctx, 3, 1, 18, 12, p.hair);
-    px(ctx, 1, 8, 5, 10, p.hair);
-  } else if (style === "braid") {
-    px(ctx, 5, 2, 14, 5, p.hair);
-    px(ctx, 2, 8, 3, 12, p.hair);
-    px(ctx, 1, 19, 5, 2, p.trim);
-  } else if (style === "hood") {
-    px(ctx, 3, 0, 18, 16, p.cloth);
-    px(ctx, 7, 5, 11, 10, p.skin);
-  } else {
-    px(ctx, 4, 2, 16, 14, p.hair);
-    px(ctx, 8, 6, 10, 8, p.skin);
-  }
+function stripes(ctx: CanvasRenderingContext2D, colors: string[]) {
+  colors.forEach((color, i) => {
+    ctx.fillStyle = color;
+    ctx.fillRect(0, i * 4, 22, 4);
+  });
 }
 
-export function drawBust(ctx: CanvasRenderingContext2D, id: string, face: 1 | -1) {
-  const canvas = ctx.canvas;
-  const scale = 4;
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.imageSmoothingEnabled = false;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  const ch = CHARACTERS[id];
-  ctx.fillStyle = face === 1 ? "#163884" : "#1c4a96";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  if (!ch) {
-    ctx.fillStyle = "#f4f7ff";
-    ctx.font = "700 42px sans-serif";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText("?", canvas.width / 2, canvas.height / 2);
-    return;
-  }
-  const p = ch.palette;
-  ctx.save();
-  ctx.translate(canvas.width / 2, canvas.height / 2 + 4);
-  ctx.scale(face * scale, scale);
-  ctx.translate(-12, -15);
-  px(ctx, 0, 18, 24, 12, p.cloth);
-  px(ctx, 4, 18, 14, 3, p.trim);
-  px(ctx, 9, 15, 5, 5, p.skin);
-  if (ch.hair !== "hood" && ch.hair !== "bob" && ch.hair !== "mane") px(ctx, 6, 5, 13, 12, p.skin);
-  hairPixels(ctx, ch.hair, p);
-  if (ch.hair === "hood" || ch.hair === "bob" || ch.hair === "mane") px(ctx, 8, 6, 10, 9, p.skin);
-  px(ctx, 15, 9, 2, 2, "#1a120c");
-  px(ctx, 14, 8, 3, 1, "#fffaf2");
-  px(ctx, 14, 14, 3, 1, "#8a4030");
-  ctx.restore();
-}
+const FLAGS: Flag[] = [
+  { x: 0.15, y: 0.22, label: "U.S.A.", ids: ["ken", "guile"], paint: (ctx) => stripes(ctx, ["#b22234", "#fff", "#b22234", "#3c3b6e"]) },
+  { x: 0.28, y: 0.4, label: "BRAZIL", ids: ["blanka"], paint: (ctx) => stripes(ctx, ["#009c3b", "#ffdf00", "#009c3b"]) },
+  { x: 0.45, y: 0.24, label: "SPAIN", ids: [], paint: (ctx) => stripes(ctx, ["#c60b1e", "#ffc400", "#c60b1e"]) },
+  { x: 0.54, y: 0.16, label: "U.S.S.R.", ids: ["zangief"], paint: (ctx) => stripes(ctx, ["#de1a1a", "#de1a1a", "#de1a1a"]) },
+  { x: 0.63, y: 0.32, label: "INDIA", ids: ["dhalsim"], paint: (ctx) => stripes(ctx, ["#ff9933", "#ffffff", "#138808"]) },
+  { x: 0.72, y: 0.24, label: "CHINA", ids: ["chunli"], paint: (ctx) => stripes(ctx, ["#de2910", "#de2910", "#ffde00"]) },
+  {
+    x: 0.82,
+    y: 0.3,
+    label: "JAPAN",
+    ids: ["ryu", "honda"],
+    paint: (ctx) => {
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(0, 0, 22, 14);
+      ctx.fillStyle = "#bc002d";
+      ctx.beginPath();
+      ctx.arc(11, 7, 4, 0, Math.PI * 2);
+      ctx.fill();
+    },
+  },
+  { x: 0.66, y: 0.44, label: "THAI", ids: [], paint: (ctx) => stripes(ctx, ["#a51931", "#fff", "#2d2a4a", "#fff", "#a51931"]) },
+];
 
-function continent(ctx: CanvasRenderingContext2D, poly: number[][], w: number, h: number) {
+function continent(ctx: CanvasRenderingContext2D, poly: number[][], w: number, h: number, fill: string) {
   ctx.beginPath();
   poly.forEach(([x, y], i) => {
     const pxn = (x / 100) * w;
@@ -88,78 +66,83 @@ function continent(ctx: CanvasRenderingContext2D, poly: number[][], w: number, h
     else ctx.lineTo(pxn, pyn);
   });
   ctx.closePath();
-  ctx.fillStyle = "#e6d3a1";
+  ctx.fillStyle = fill;
   ctx.fill();
-  ctx.strokeStyle = "#f7f1e4";
-  ctx.lineWidth = 3;
-  ctx.stroke();
-  ctx.strokeStyle = "#b08958";
-  ctx.lineWidth = 1;
+  ctx.strokeStyle = "#f7f3e8";
+  ctx.lineWidth = 2;
   ctx.stroke();
 }
 
-function flag(ctx: CanvasRenderingContext2D, x: number, y: number, ch: Character, hot: boolean) {
+function drawFlag(ctx: CanvasRenderingContext2D, flag: Flag, hot: boolean) {
+  const x = flag.x * VIEW_W;
+  const y = flag.y * VIEW_H;
   ctx.save();
   ctx.translate(x, y);
-  ctx.fillStyle = "rgba(0,0,0,0.35)";
-  ctx.fillRect(2, 16, 22, 4);
-  ctx.fillStyle = "#f4f7ff";
-  ctx.fillRect(0, 0, 3, 18);
-  ctx.fillStyle = ch.palette.cloth;
-  ctx.fillRect(3, 0, 18, 12);
-  ctx.fillStyle = ch.palette.accent;
-  ctx.fillRect(3, 0, 18, 4);
-  ctx.fillStyle = ch.palette.trim;
-  ctx.fillRect(3, 8, 18, 4);
-  ctx.strokeStyle = hot ? "#ffe14a" : "#0b1c3a";
+  ctx.fillStyle = "rgba(0,0,0,0.28)";
+  ctx.fillRect(3, 16, 20, 3);
+  ctx.fillStyle = "#f7f4ea";
+  ctx.fillRect(-1, 0, 3, 18);
+  flag.paint(ctx);
+  ctx.strokeStyle = hot ? "#ffe14a" : "#102040";
   ctx.lineWidth = hot ? 2 : 1;
-  ctx.strokeRect(3, 0, 18, 12);
+  ctx.strokeRect(0, 0, 22, 14);
   ctx.font = '8px "Press Start 2P", monospace';
   ctx.textAlign = "left";
   ctx.textBaseline = "top";
   ctx.lineWidth = 3;
-  ctx.strokeStyle = "#0b1c3a";
-  ctx.strokeText(ch.home.label, 0, 20);
+  ctx.strokeStyle = "#102040";
+  ctx.strokeText(flag.label, 0, 18);
   ctx.fillStyle = hot ? "#ffe14a" : "#f7f4ea";
-  ctx.fillText(ch.home.label, 0, 20);
+  ctx.fillText(flag.label, 0, 18);
   ctx.restore();
+}
+
+export function drawBust(ctx: CanvasRenderingContext2D, id: string, face: 1 | -1) {
+  const canvas = ctx.canvas;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.imageSmoothingEnabled = false;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const sprite = PORTRAITS[id];
+  if (!sprite) {
+    ctx.fillStyle = "#d8e4f8";
+    ctx.font = "700 42px sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("?", canvas.width / 2, canvas.height / 2);
+    return;
+  }
+  const w = sprite.rows[0]?.length ?? 1;
+  const h = sprite.rows.length;
+  const scale = Math.min(canvas.width / w, canvas.height / h);
+  const dx = (canvas.width - w * scale) / 2;
+  const dy = (canvas.height - h * scale) / 2;
+  blitPortrait(ctx, id, face, face === 1 ? dx : dx + w * scale, dy, scale);
 }
 
 export function renderAtlas(ctx: CanvasRenderingContext2D, dpr: number, selected: [string, string] | null) {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.imageSmoothingEnabled = true;
-  ctx.fillStyle = "#3c86d4";
-  ctx.fillRect(0, 0, VIEW_W, VIEW_H);
   const wash = ctx.createLinearGradient(0, 0, 0, VIEW_H);
-  wash.addColorStop(0, "#6eb0ea");
-  wash.addColorStop(1, "#2a6cb8");
+  wash.addColorStop(0, "#7ec0f0");
+  wash.addColorStop(1, "#2f78c4");
   ctx.fillStyle = wash;
   ctx.fillRect(0, 0, VIEW_W, VIEW_H);
-  ctx.strokeStyle = "rgba(255,255,255,0.08)";
-  ctx.lineWidth = 1;
-  for (let x = 40; x < VIEW_W; x += 48) {
-    ctx.beginPath();
-    ctx.moveTo(x, 0);
-    ctx.lineTo(x, VIEW_H);
-    ctx.stroke();
-  }
-  for (const poly of LAND) continent(ctx, poly, VIEW_W, VIEW_H * 0.7);
+  const mapH = VIEW_H * 0.72;
+  for (const poly of LAND) continent(ctx, poly, VIEW_W, mapH, "#e7d7a4");
+  for (const poly of GREEN) continent(ctx, poly, VIEW_W, mapH, "#7da85a");
   const chosen = new Set(selected ?? []);
-  for (const id of ROSTER) {
-    const ch = CHARACTERS[id];
-    const x = ch.home.x * VIEW_W;
-    const y = 70 + ch.home.y * (VIEW_H * 0.34);
-    if (y > VIEW_H * 0.46) continue;
-    flag(ctx, x, y, ch, chosen.has(id));
+  for (const flag of FLAGS) {
+    const owns = flag.ids.some((id) => chosen.has(id));
+    drawFlag(ctx, flag, owns && CHARACTERS[flag.ids[0] ?? ""] !== undefined);
   }
 }
 
 export function paintBusts(root: ParentNode) {
   for (const canvas of root.querySelectorAll("canvas.bust")) {
     if (!(canvas instanceof HTMLCanvasElement)) continue;
-    const ctx = canvas.getContext("2d");
+    const g = canvas.getContext("2d");
     const face = canvas.dataset.face === "-1" ? -1 : 1;
-    if (!ctx) continue;
-    drawBust(ctx, canvas.dataset.char ?? "", face);
+    if (!g) continue;
+    drawBust(g, canvas.dataset.char ?? "", face);
   }
 }

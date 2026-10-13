@@ -37,7 +37,7 @@ class Game {
   private reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   private dpr = 1;
   private names: [string, string] = ["Player 1", "Player 2"];
-  private picks: [string, string] = ["vesper", "brass"];
+  private picks: [string, string] = ["ryu", "ken"];
   private invited = "";
   private lobby: Extract<ServerMsg, { type: "lobby" }> | null = null;
   private chip: [number, number] = [100, 114];
@@ -185,8 +185,8 @@ class Game {
   private atlasPicks(): [string, string] | null {
     if (this.screen === "setup") return this.picks;
     if (this.screen === "lobby" && this.lobby) {
-      const a = this.lobby.players[0]?.character || "vesper";
-      const b = this.lobby.players[1]?.character || "brass";
+      const a = this.lobby.players[0]?.character || "ryu";
+      const b = this.lobby.players[1]?.character || "ken";
       return [a, b];
     }
     return null;
@@ -443,7 +443,7 @@ class Game {
     const mine = this.lobby?.players[this.slot];
     if (!mine || mine.character || this.defaulted) return;
     this.defaulted = true;
-    this.link?.send({ type: "pick", character: this.slot === 0 ? "vesper" : "brass" });
+    this.link?.send({ type: "pick", character: this.slot === 0 ? "ryu" : "ken" });
   }
 
   private onSocketClose() {
