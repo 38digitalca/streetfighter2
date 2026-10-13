@@ -3,6 +3,15 @@ import { attackBox, bodyBox, createMatch, moveFor, windup } from "../shared/sim"
 import type { BodyShape, Character, Fighter, Hair, MatchState } from "../shared/types";
 import { GROUND_Y, STAGE_W, VIEW_H, VIEW_W } from "../shared/types";
 
+export interface Floater {
+  x: number;
+  y: number;
+  text: string;
+  life: number;
+  max: number;
+  color: string;
+}
+
 export interface RenderOpts {
   dpr: number;
   debug: boolean;
@@ -10,6 +19,7 @@ export interface RenderOpts {
   localSlot: 0 | 1 | null;
   chip: [number, number];
   hud: boolean;
+  floaters: Floater[];
 }
 
 interface Pose {
@@ -31,88 +41,111 @@ function cameraX(state: MatchState): number {
 
 function poseOf(f: Fighter, tick: number): Pose {
   const pose: Pose = {
-    bob: Math.sin(tick / 9) * 1.4,
-    drop: f.crouched ? 32 : 0,
+    bob: Math.sin(tick / 10) * 1.2,
+    drop: 0,
     lean: 0,
-    legF: 0.18,
-    legB: -0.12,
-    legLen: 42,
-    armF: 0.55,
-    armB: -0.25,
-    armLen: 32,
+    legF: 0.22,
+    legB: -0.18,
+    legLen: 44,
+    armF: 0.95,
+    armB: 0.35,
+    armLen: 30,
   };
   if (f.action === "walk") {
-    const s = Math.sin(tick / 3.1);
-    pose.legF = 0.7 * s;
-    pose.legB = -0.7 * s;
-    pose.armF = 0.45 - 0.45 * s;
-    pose.armB = -0.2 + 0.45 * s;
-    pose.bob = Math.abs(s) * 2;
+    const s = Math.sin(tick / 3.4);
+    pose.legF = 0.55 * s;
+    pose.legB = -0.55 * s;
+    pose.armF = 0.7 - 0.35 * s;
+    pose.armB = 0.15 + 0.35 * s;
+    pose.bob = Math.abs(s) * 1.6;
   } else if (f.crouched || f.action === "crouchPunch" || f.action === "crouchKick") {
-    pose.drop = 34;
-    pose.legF = 1.25;
-    pose.legB = 1.7;
+    pose.drop = 36;
+    pose.legF = 1.15;
+    pose.legB = -1.05;
     pose.legLen = 30;
     pose.bob = 0;
-    pose.armF = 0.85;
+    pose.armF = 1.05;
+    pose.armB = 0.45;
   } else if (f.action === "jump" || f.action === "airPunch" || f.action === "airKick") {
-    pose.legF = 1.15;
-    pose.legB = 0.35;
-    pose.armF = 2.35;
-    pose.armB = 2.1;
+    pose.legF = 2.15;
+    pose.legB = 2.45;
+    pose.legLen = 34;
+    pose.armF = 2.4;
+    pose.armB = 2.15;
     pose.bob = 0;
   } else if (f.action === "block") {
-    pose.armF = 1.7;
-    pose.armB = 1.45;
-    pose.armLen = 28;
-    pose.lean = -0.12;
-    if (f.crouched) pose.drop = 30;
-  } else if (f.action === "hit" || f.action === "launch") {
-    pose.lean = 0.4;
-    pose.armF = 2.5;
-    pose.armB = -0.8;
-    pose.legF = -0.3;
-  } else if (f.action === "win") {
-    pose.armF = 2.7;
-    pose.armLen = 38;
-    pose.bob = Math.sin(tick / 7) * 2;
-  } else if (f.action === "getup") {
-    pose.drop = 24;
-    pose.lean = 0.25;
-  } else if (f.action === "down" || f.action === "ko") {
+    pose.armF = 1.85;
+    pose.armB = 1.55;
+    pose.armLen = 26;
+    pose.lean = -0.08;
+    if (f.crouched) {
+      pose.drop = 32;
+      pose.legF = 1.1;
+      pose.legB = -1.0;
+      pose.legLen = 30;
+    }
+  } else if (f.action === "hit") {
+    pose.lean = 0.22;
     pose.armF = 2.2;
-    pose.legF = 0.4;
+    pose.armB = 2.6;
+    pose.legF = 0.15;
+    pose.legB = -0.4;
+  } else if (f.action === "launch") {
+    pose.lean = 0.35;
+    pose.armF = 2.4;
+    pose.armB = 2.8;
+    pose.legF = 1.8;
+    pose.legB = 2.2;
+    pose.legLen = 36;
+  } else if (f.action === "win") {
+    pose.armF = 2.75;
+    pose.armLen = 40;
+    pose.armB = 0.4;
+    pose.legF = 0.2;
+    pose.legB = -0.28;
+    pose.bob = Math.sin(tick / 8) * 1.5;
+  } else if (f.action === "getup") {
+    pose.drop = 22;
+    pose.lean = 0.18;
+    pose.legF = 0.8;
+    pose.legB = -0.7;
+  } else if (f.action === "down" || (f.action === "ko" && f.onGround)) {
+    pose.armF = 0.4;
+    pose.armB = -0.4;
+    pose.legF = 0.3;
+    pose.legB = -0.2;
   }
 
   const move = moveFor(f);
   if (move && (f.action === "punch" || f.action === "crouchPunch" || f.action === "airPunch")) {
     const e = windup(f);
-    pose.armF = 0.35 + 1.25 * e;
-    pose.armLen = 30 + 20 * e;
+    pose.armF = 0.7 + 0.95 * e;
+    pose.armLen = 28 + 26 * e;
   } else if (move && (f.action === "kick" || f.action === "crouchKick" || f.action === "airKick")) {
     const e = windup(f);
-    pose.legF = 0.2 + 1.25 * e;
-    pose.legLen = 40 + 16 * e;
+    pose.legF = 0.2 + 1.35 * e;
+    pose.legLen = 42 + 18 * e;
   } else if (f.action === "special") {
     const kind = CHARACTERS[f.charId]?.specialKind;
     const e = windup(f);
     if (kind === "dart") {
-      pose.armF = 0.3 + 1.35 * e;
-      pose.armLen = 34 + 8 * e;
-      pose.lean = -0.08;
+      pose.armF = 0.4 + 1.2 * e;
+      pose.armLen = 32 + 14 * e;
+      pose.lean = -0.06;
     } else if (kind === "riser") {
-      pose.armF = 2.55;
-      pose.armLen = 40;
-      pose.lean = -0.3;
-      pose.legF = 0.9;
+      pose.armF = 2.6;
+      pose.armLen = 42;
+      pose.lean = -0.2;
+      pose.legF = 0.8;
+      pose.legB = 0.2;
     } else if (kind === "dive") {
-      pose.legF = 1.45;
-      pose.legLen = 56;
-      pose.lean = 0.55;
+      pose.legF = 1.5;
+      pose.legLen = 58;
+      pose.lean = 0.4;
     } else if (kind === "flare") {
-      pose.armF = 2.15;
-      pose.armB = 2.35;
-      pose.armLen = 36;
+      pose.armF = 2.2;
+      pose.armB = 2.45;
+      pose.armLen = 38;
     }
   }
   return pose;
@@ -268,7 +301,7 @@ function paintLocal(ctx: CanvasRenderingContext2D, f: Fighter, tick: number) {
 function drawFighter(ctx: CanvasRenderingContext2D, f: Fighter, cam: number, tick: number) {
   ctx.save();
   ctx.translate(f.x - cam, f.y);
-  ctx.scale(f.facing, 1);
+  ctx.scale(f.facing * 1.12, 1.12);
   paintLocal(ctx, f, tick);
   ctx.restore();
 }
@@ -405,10 +438,10 @@ function drawSpark(ctx: CanvasRenderingContext2D, x: number, y: number, life: nu
   ctx.strokeStyle = kind === "block" ? "#f8fafc" : kind === "clash" ? "#e9d5ff" : "#ffb020";
   ctx.fillStyle = kind === "ko" ? "#ff4d2e" : "#fff4d6";
   ctx.lineWidth = 2;
-  const n = kind === "ko" ? 10 : 6;
+  const n = kind === "ko" ? 12 : 8;
   for (let i = 0; i < n; i++) {
     const a = (i / n) * Math.PI * 2 + life * 0.2;
-    const len = 6 + (1 - t) * 16;
+    const len = 10 + (1 - t) * 26;
     ctx.beginPath();
     ctx.moveTo(Math.cos(a) * 3, Math.sin(a) * 3);
     ctx.lineTo(Math.cos(a) * len, Math.sin(a) * len);
@@ -556,6 +589,7 @@ export function render(ctx: CanvasRenderingContext2D, state: MatchState, opt: Re
   const order = [...state.fighters].sort((a, b) => a.x - b.x);
   for (const f of order) drawFighter(ctx, f, cam, state.tick);
   for (const spark of state.sparks) drawSpark(ctx, spark.x, spark.y, spark.life, spark.max, spark.kind, cam);
+  drawFloaters(ctx, opt.floaters, cam);
 
   if (opt.debug) {
     ctx.lineWidth = 1;
@@ -584,6 +618,25 @@ export function render(ctx: CanvasRenderingContext2D, state: MatchState, opt: Re
   ctx.fillRect(0, 0, VIEW_W, VIEW_H);
   ctx.restore();
   if (opt.hud) drawHud(ctx, state, opt);
+}
+
+function drawFloaters(ctx: CanvasRenderingContext2D, floaters: Floater[], cam: number) {
+  if (floaters.length === 0) return;
+  ctx.save();
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.font = '400 22px "Archivo Black", Impact, sans-serif';
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = "#140c0a";
+  for (const floater of floaters) {
+    const t = Math.max(0, floater.life / floater.max);
+    const rise = (1 - t) * 42;
+    ctx.globalAlpha = Math.min(1, t * 1.6);
+    ctx.fillStyle = floater.color;
+    ctx.strokeText(floater.text, floater.x - cam, floater.y - rise);
+    ctx.fillText(floater.text, floater.x - cam, floater.y - rise);
+  }
+  ctx.restore();
 }
 
 export function drawPortrait(ctx: CanvasRenderingContext2D, charId: string) {

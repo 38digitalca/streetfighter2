@@ -194,8 +194,8 @@ label { display: grid; gap: 0.35rem; font-size: 0.86rem; font-weight: 600; margi
 #result {
   position: absolute;
   left: 50%;
-  top: 46%;
-  transform: translate(-50%, -50%);
+  bottom: 58px;
+  transform: translateX(-50%);
   width: min(420px, calc(100% - 28px));
   background: rgba(12, 8, 7, 0.92);
   border: 1px solid var(--line);

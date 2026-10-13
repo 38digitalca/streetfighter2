@@ -1,10 +1,12 @@
 import { cpuInput } from "../shared/ai";
 import { CHARACTERS } from "../shared/characters";
+import { emptyInput } from "../shared/mask";
 import { cleanCode, cleanName } from "../shared/names";
 import type { ServerMsg } from "../shared/protocol";
 import { createMatch, step } from "../shared/sim";
 import type { MatchState } from "../shared/types";
 import { VIEW_H, VIEW_W } from "../shared/types";
+import type { Floater } from "./render";
 import { Sfx } from "./audio";
 import { Controls } from "./input";
 import { Link } from "./net";
@@ -40,6 +42,7 @@ class Game {
   private invited = "";
   private lobby: Extract<ServerMsg, { type: "lobby" }> | null = null;
   private chip: [number, number] = [100, 114];
+  private floaters: Floater[] = [];
   private last = performance.now();
   private acc = 0;
   private defaulted = false;
@@ -95,6 +98,7 @@ class Game {
       steps += 1;
       this.simTick();
     }
+    if (steps > 0) this.decayFloaters(steps);
     if (this.screen === "fight" && this.mode === "online" && this.link?.isOpen()) {
       this.link.send({ type: "input", mask: this.controls.mask("solo") });
       if (now - this.lastPing > 1000) {
@@ -110,17 +114,68 @@ class Game {
   private simTick() {
     if (this.screen === "fight" && this.match && this.mode !== "online") {
       const p1 = this.controls.read("solo");
-      const p2 = this.mode === "practice" ? cpuInput(this.match, 1) : this.controls.read("p2");
+      const p2 = this.mode === "practice" ? cpuInput(this.match, 1, true) : this.controls.read("p2");
       const left = this.mode === "local" ? this.controls.read("p1") : p1;
+      const before: [number, number] = [this.match.fighters[0].hp, this.match.fighters[1].hp];
       step(this.match, [left, p2]);
+      this.noteDamage(before, this.match);
       this.playSounds(this.match);
       return;
     }
-    if (this.screen !== "fight") {
-      if (this.backdrop.phase === "match") {
-        this.backdrop = createMatch({ name: "Vesper", charId: "vesper" }, { name: "Brass", charId: "brass" });
-      }
-      step(this.backdrop, [cpuInput(this.backdrop, 0), cpuInput(this.backdrop, 1)]);
+    if (this.screen !== "fight") this.paceBackdrop();
+  }
+
+  private paceBackdrop() {
+    const fresh = () => {
+      const next = createMatch({ name: "Vesper", charId: "vesper" }, { name: "Brass", charId: "brass" });
+      next.phase = "fight";
+      next.phaseTimer = 0;
+      next.banner = "";
+      next.bannerLife = 0;
+      return next;
+    };
+    if (this.backdrop.phase !== "fight") {
+      this.backdrop = fresh();
+      return;
+    }
+    const dist = this.backdrop.fighters[1].x - this.backdrop.fighters[0].x;
+    const cycle = this.backdrop.tick % 420;
+    const left = emptyInput();
+    const right = emptyInput();
+    if (cycle < 160 && dist > 220) {
+      left.right = true;
+      right.left = true;
+    } else if (cycle >= 220 && cycle < 360 && dist < 460) {
+      left.left = true;
+      right.right = true;
+    }
+    step(this.backdrop, [left, right]);
+    this.backdrop.timer = 99;
+    if (this.backdrop.phase !== "fight") this.backdrop = fresh();
+  }
+
+  private noteDamage(before: [number, number], state: MatchState) {
+    for (let i = 0; i < 2; i++) {
+      const drop = before[i] - state.fighters[i].hp;
+      if (drop < 0.5) continue;
+      const f = state.fighters[i];
+      const blocked = f.action === "block";
+      this.floaters.push({
+        x: f.x,
+        y: f.y - 132,
+        text: blocked ? "BLOCK" : String(Math.round(drop)),
+        life: 46,
+        max: 46,
+        color: blocked ? "#f8fafc" : "#ffd36a",
+      });
+    }
+    if (this.floaters.length > 8) this.floaters.splice(0, this.floaters.length - 8);
+  }
+
+  private decayFloaters(steps: number) {
+    for (const floater of this.floaters) floater.life -= steps;
+    if (this.floaters.some((floater) => floater.life <= 0)) {
+      this.floaters = this.floaters.filter((floater) => floater.life > 0);
     }
   }
 
@@ -145,6 +200,7 @@ class Game {
       localSlot: this.screen === "fight" ? this.slot : null,
       chip,
       hud: this.screen === "fight",
+      floaters: this.screen === "fight" ? this.floaters : [],
     });
   }
 
@@ -348,10 +404,14 @@ class Game {
     }
     if (msg.type === "state") {
       if (!this.lobby) return;
+      const sameRound = msg.epoch === this.epoch && this.match;
       if (msg.epoch !== this.epoch) {
         this.epoch = msg.epoch;
         this.lastSound = 0;
+        this.floaters = [];
         this.chip = [msg.state.fighters[0].hp, msg.state.fighters[1].hp];
+      } else if (sameRound && this.match) {
+        this.noteDamage([this.match.fighters[0].hp, this.match.fighters[1].hp], msg.state);
       }
       this.match = msg.state;
       this.playSounds(msg.state);
@@ -416,6 +476,7 @@ class Game {
     this.slot = 0;
     this.lastSound = 0;
     this.match = createMatch({ name: n1, charId: this.picks[0] }, { name: n2, charId: this.picks[1] });
+    this.floaters = [];
     this.chip = [this.match.fighters[0].maxHp, this.match.fighters[1].maxHp];
     this.screen = "fight";
     this.renderUi();
@@ -428,6 +489,7 @@ class Game {
     }
     if (!this.match || (this.mode !== "local" && this.mode !== "practice")) return;
     this.lastSound = 0;
+    this.floaters = [];
     this.match = createMatch(
       { name: this.names[0], charId: this.picks[0] },
       { name: this.names[1], charId: this.picks[1] },
@@ -442,6 +504,7 @@ class Game {
     }
     if (this.mode !== "local" && this.mode !== "practice") return;
     this.match = null;
+    this.floaters = [];
     this.screen = "setup";
     this.renderUi();
   }
@@ -454,6 +517,7 @@ class Game {
     }
     this.link = null;
     this.match = null;
+    this.floaters = [];
     this.lobby = null;
     this.mode = null;
     this.screen = "title";

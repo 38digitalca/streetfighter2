@@ -164,7 +164,7 @@ function cue(state: MatchState, name: SoundName) {
   if (state.sounds.length > 12) state.sounds.splice(0, state.sounds.length - 12);
 }
 
-function spark(state: MatchState, x: number, y: number, kind: SparkKind, life = 14) {
+function spark(state: MatchState, x: number, y: number, kind: SparkKind, life = 22) {
   state.sparks.push({ x, y, life, max: life, kind });
   if (state.sparks.length > 24) state.sparks.splice(0, state.sparks.length - 24);
 }
