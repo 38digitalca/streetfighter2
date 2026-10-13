@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="Cinder Alley is an original two-player browser fighter. Create a room and fight a friend, or play on one keyboard." />
+    <title>Cinder Alley</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="view" width="960" height="540" aria-label="Cinder Alley match"></canvas>
+      <div id="ui"></div>
+      <div id="touch" hidden>
+        <div class="dpad" aria-label="Movement">
+          <button type="button" data-hold="up" aria-label="Jump">↑</button>
+          <button type="button" data-hold="left" aria-label="Left">←</button>
+          <button type="button" data-hold="right" aria-label="Right">→</button>
+          <button type="button" data-hold="down" aria-label="Crouch">↓</button>
+        </div>
+        <div class="actions" aria-label="Attacks">
+          <button type="button" data-hold="punch">Punch</button>
+          <button type="button" data-hold="kick">Kick</button>
+          <button type="button" data-hold="special">Special</button>
+        </div>
+      </div>
+    </div>
+    <noscript>Cinder Alley needs JavaScript to run the match.</noscript>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
