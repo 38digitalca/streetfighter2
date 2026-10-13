@@ -23,14 +23,13 @@ function mv(
   };
 }
 
-export const ROSTER = ["vesper", "brass", "kite", "moth"] as const;
-
-export const CHARACTERS: Record<string, Character> = {
+const CORE: Record<string, Character> = {
   vesper: {
     id: "vesper",
     name: "Vesper",
     title: "Night courier",
     blurb: "Fast hands and a crescent dart. Thin health, so she has to leave first.",
+    home: { x: 0.5, y: 0.46, label: "LAGOS" },
     specialName: "Crescent Dart",
     specialKind: "dart",
     tempo: "Fleet",
@@ -78,6 +77,7 @@ export const CHARACTERS: Record<string, Character> = {
     name: "Brass",
     title: "Dock brawler",
     blurb: "Slow walk, heavy hands, and a rising hook that puts people on the curb.",
+    home: { x: 0.18, y: 0.38, label: "HAVANA" },
     specialName: "Rising Hook",
     specialKind: "riser",
     tempo: "Measured",
@@ -128,6 +128,7 @@ export const CHARACTERS: Record<string, Character> = {
     name: "Kite",
     title: "Rooftop runner",
     blurb: "A low slide on the ground and a diving spike from the air. Guess wrong.",
+    home: { x: 0.84, y: 0.34, label: "SEOUL" },
     specialName: "Dive Spike",
     specialKind: "dive",
     tempo: "Quick",
@@ -193,6 +194,7 @@ export const CHARACTERS: Record<string, Character> = {
     name: "Moth",
     title: "Lantern duelist",
     blurb: "Even tools and a two-hit flare that fills the space in front of her.",
+    home: { x: 0.57, y: 0.4, label: "CAIRO" },
     specialName: "Lantern Flare",
     specialKind: "flare",
     tempo: "Even",
@@ -238,6 +240,95 @@ export const CHARACTERS: Record<string, Character> = {
     },
   },
 };
+
+function tune(base: Character, patch: Partial<Character> & Pick<Character, "id" | "name" | "title" | "blurb" | "home">): Character {
+  const moves = structuredClone(base.moves);
+  return {
+    ...base,
+    ...patch,
+    palette: { ...base.palette, ...patch.palette },
+    moves: patch.moves ?? moves,
+  };
+}
+
+const reedMoves = structuredClone(CORE.vesper.moves);
+if (reedMoves.special.bolt) reedMoves.special.bolt = { speed: 7.6, damage: 13, lift: 96 };
+reedMoves.special.cooldown = 92;
+
+const junoMoves = structuredClone(CORE.brass.moves);
+junoMoves.special.damage = 16;
+junoMoves.special.cooldown = 92;
+junoMoves.special.launch = -10;
+
+const coilMoves = structuredClone(CORE.kite.moves);
+coilMoves.special.slide = 7.2;
+coilMoves.special.damage = 13;
+
+const ashMoves = structuredClone(CORE.moth.moves);
+ashMoves.special.damage = 9;
+ashMoves.special.cooldown = 96;
+
+export const CHARACTERS: Record<string, Character> = {
+  ...CORE,
+  reed: tune(CORE.vesper, {
+    id: "reed",
+    name: "Reed",
+    title: "High collar",
+    blurb: "A heavier dart and a longer coat. She wins the firefight and loses the sprint.",
+    home: { x: 0.44, y: 0.28, label: "LISBON" },
+    specialName: "Long Dart",
+    hair: "bun",
+    body: "slim",
+    walk: 3.85,
+    maxHp: 108,
+    palette: { skin: "#e8c4a4", hair: "#1c140e", cloth: "#1f3d32", trim: "#d6c4a1", accent: "#86efac", metal: "#bbf7d0", sole: "#102018" },
+    moves: reedMoves,
+  }),
+  juno: tune(CORE.brass, {
+    id: "juno",
+    name: "Juno",
+    title: "Gold gloves",
+    blurb: "Walks in, plants, and lets the rising hook finish the conversation.",
+    home: { x: 0.22, y: 0.26, label: "OTTAWA" },
+    specialName: "Gold Hook",
+    hair: "mane",
+    body: "broad",
+    walk: 3.35,
+    maxHp: 110,
+    palette: { skin: "#c68642", hair: "#1a120c", cloth: "#111111", trim: "#f5d76e", accent: "#fbbf24", metal: "#fde68a", sole: "#1c1408" },
+    moves: junoMoves,
+  }),
+  coil: tune(CORE.kite, {
+    id: "coil",
+    name: "Coil",
+    title: "Hooded slide",
+    blurb: "Hood up. A longer low slide, and the same dive if you jump away.",
+    home: { x: 0.78, y: 0.46, label: "MANILA" },
+    specialName: "Hood Slide",
+    hair: "hood",
+    body: "lean",
+    walk: 4.35,
+    maxHp: 96,
+    palette: { skin: "#f0d0b0", hair: "#101820", cloth: "#14532d", trim: "#d9f99d", accent: "#84cc16", metal: "#ecfccb", sole: "#052e16" },
+    moves: coilMoves,
+  }),
+  ash: tune(CORE.moth, {
+    id: "ash",
+    name: "Ash",
+    title: "Cold flare",
+    blurb: "Takes one step and fills the lane with a two-hit flare.",
+    home: { x: 0.4, y: 0.2, label: "REYKJAVIK" },
+    specialName: "Cold Flare",
+    hair: "braid",
+    body: "dancer",
+    walk: 3.45,
+    maxHp: 110,
+    palette: { skin: "#f3d5c4", hair: "#d7dde8", cloth: "#334155", trim: "#e2e8f0", accent: "#93c5fd", metal: "#f8fafc", sole: "#0f172a" },
+    moves: ashMoves,
+  }),
+};
+
+export const ROSTER = ["vesper", "juno", "coil", "reed", "brass", "moth", "ash", "kite"] as const;
 
 export function getCharacter(id: string): Character | null {
   return CHARACTERS[id] ?? null;

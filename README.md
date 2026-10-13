@@ -43,9 +43,15 @@ Press `` ` `` during a fight to show hitboxes. Escape leaves the match.
 ## Fighters
 
 - **Vesper** — fast, with a Crescent Dart.
+- **Juno** — gold gloves and a rising hook.
+- **Coil** — a long low slide, and a dive from the air.
+- **Reed** — a heavier, slower dart.
 - **Brass** — slow and heavy, with a Rising Hook that launches.
-- **Kite** — a low slide on the ground and a Dive Spike from the air.
 - **Moth** — even tools and a two-hit Lantern Flare.
+- **Ash** — a wider, colder flare.
+- **Kite** — a low slide on the ground and a Dive Spike from the air.
+
+On the player select screen, click a portrait for 1P and right-click for 2P. The world map marks each fighter's home.
 
 First to two rounds wins. A double KO gives the round to neither fighter. When time runs out, the healthier fighter takes the round.
 

@@ -30,7 +30,7 @@ export interface Rect {
 
 export type Level = "low" | "mid" | "overhead";
 export type SpecialKind = "dart" | "riser" | "dive" | "flare";
-export type Hair = "ponytail" | "crop" | "cap" | "bob";
+export type Hair = "ponytail" | "crop" | "cap" | "bob" | "bun" | "mane" | "braid" | "hood";
 export type BodyShape = "slim" | "broad" | "lean" | "dancer";
 
 export interface BoltSpec {
@@ -72,11 +72,18 @@ export interface Palette {
   sole: string;
 }
 
+export interface Home {
+  x: number;
+  y: number;
+  label: string;
+}
+
 export interface Character {
   id: string;
   name: string;
   title: string;
   blurb: string;
+  home: Home;
   specialName: string;
   specialKind: SpecialKind;
   tempo: string;

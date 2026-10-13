@@ -1,6 +1,5 @@
 import { cpuInput } from "../shared/ai";
 import { CHARACTERS } from "../shared/characters";
-import { emptyInput } from "../shared/mask";
 import { cleanCode, cleanName } from "../shared/names";
 import type { ServerMsg } from "../shared/protocol";
 import { createMatch, step } from "../shared/sim";
@@ -11,7 +10,8 @@ import { Sfx } from "./audio";
 import { Controls } from "./input";
 import { Link } from "./net";
 import { render } from "./render";
-import { fightHtml, lobbyHtml, onlineHtml, paintPortraits, setupHtml, titleHtml } from "./ui";
+import { paintBusts, renderAtlas } from "./selectart";
+import { fightHtml, lobbyHtml, onlineHtml, setupHtml, titleHtml } from "./ui";
 
 type Mode = "online" | "local" | "practice";
 type Screen = "title" | "online" | "setup" | "lobby" | "fight";
@@ -20,7 +20,6 @@ class Game {
   private screen: Screen = "title";
   private mode: Mode | null = null;
   private match: MatchState | null = null;
-  private backdrop = createMatch({ name: "Vesper", charId: "vesper" }, { name: "Brass", charId: "brass" });
   private slot: 0 | 1 = 0;
   private link: Link | null = null;
   private controls: Controls;
@@ -61,6 +60,12 @@ class Game {
       const target = (event.target as Element | null)?.closest?.("[data-act]");
       if (!(target instanceof HTMLElement)) return;
       this.onAct(target.dataset.act ?? "", target);
+    });
+    this.ui.addEventListener("contextmenu", (event) => {
+      const target = (event.target as Element | null)?.closest?.("[data-act='pick']");
+      if (!(target instanceof HTMLElement) || this.screen !== "setup") return;
+      event.preventDefault();
+      this.pickSide(target.dataset.arg ?? "", 1);
     });
     this.ui.addEventListener("keydown", (event) => {
       if (event.key !== "Enter" || !(event.target instanceof HTMLInputElement)) return;
@@ -120,38 +125,7 @@ class Game {
       step(this.match, [left, p2]);
       this.noteDamage(before, this.match);
       this.playSounds(this.match);
-      return;
     }
-    if (this.screen !== "fight") this.paceBackdrop();
-  }
-
-  private paceBackdrop() {
-    const fresh = () => {
-      const next = createMatch({ name: "Vesper", charId: "vesper" }, { name: "Brass", charId: "brass" });
-      next.phase = "fight";
-      next.phaseTimer = 0;
-      next.banner = "";
-      next.bannerLife = 0;
-      return next;
-    };
-    if (this.backdrop.phase !== "fight") {
-      this.backdrop = fresh();
-      return;
-    }
-    const dist = this.backdrop.fighters[1].x - this.backdrop.fighters[0].x;
-    const cycle = this.backdrop.tick % 420;
-    const left = emptyInput();
-    const right = emptyInput();
-    if (cycle < 160 && dist > 220) {
-      left.right = true;
-      right.left = true;
-    } else if (cycle >= 220 && cycle < 360 && dist < 460) {
-      left.left = true;
-      right.right = true;
-    }
-    step(this.backdrop, [left, right]);
-    this.backdrop.timer = 99;
-    if (this.backdrop.phase !== "fight") this.backdrop = fresh();
   }
 
   private noteDamage(before: [number, number], state: MatchState) {
@@ -182,7 +156,11 @@ class Game {
   private draw() {
     const ctx = this.canvas.getContext("2d");
     if (!ctx) return;
-    const state = this.screen === "fight" && this.match ? this.match : this.backdrop;
+    if (!(this.screen === "fight" && this.match)) {
+      renderAtlas(ctx, this.dpr, this.atlasPicks());
+      return;
+    }
+    const state = this.match;
     if (this.match && this.screen === "fight") {
       for (let i = 0; i < 2; i++) {
         const hp = this.match.fighters[i].hp;
@@ -204,6 +182,24 @@ class Game {
     });
   }
 
+  private atlasPicks(): [string, string] | null {
+    if (this.screen === "setup") return this.picks;
+    if (this.screen === "lobby" && this.lobby) {
+      const a = this.lobby.players[0]?.character || "vesper";
+      const b = this.lobby.players[1]?.character || "brass";
+      return [a, b];
+    }
+    return null;
+  }
+
+  private pickSide(id: string, side: 0 | 1) {
+    if (!CHARACTERS[id] || (this.mode !== "local" && this.mode !== "practice")) return;
+    this.rememberNames();
+    this.picks[side] = id;
+    if (this.mode === "practice" && side === 1) this.names[1] = CHARACTERS[id].name;
+    this.renderUi();
+  }
+
   private layout() {
     const app = document.getElementById("app");
     if (!app) return;
@@ -219,7 +215,8 @@ class Game {
 
   private renderUi() {
     this.controls.capture = this.screen === "fight";
-    this.ui.className = this.screen === "fight" ? "fight" : "menu";
+    const choosing = this.screen === "setup" || this.screen === "lobby";
+    this.ui.className = this.screen === "fight" ? "fight" : choosing ? "atlas select" : "atlas";
     if (this.screen === "title") this.ui.innerHTML = titleHtml(this.error);
     else if (this.screen === "online") this.ui.innerHTML = onlineHtml(this.names[0], this.invited, this.error, this.busy);
     else if (this.screen === "setup" && (this.mode === "local" || this.mode === "practice")) {
@@ -238,7 +235,7 @@ class Game {
       const net = document.getElementById("netstat");
       if (net && this.mode === "online" && this.ping) net.textContent = `${this.ping} ms`;
     }
-    paintPortraits(this.ui);
+    paintBusts(this.ui);
     this.touch.hidden = !(this.screen === "fight" && this.touchOn && this.mode !== "local");
   }
 
@@ -269,10 +266,7 @@ class Game {
         this.link?.send({ type: "pick", character: id });
         return;
       }
-      this.rememberNames();
-      this.picks[side] = id;
-      if (this.mode === "practice" && side === 1) this.names[1] = CHARACTERS[id].name;
-      this.renderUi();
+      this.pickSide(id, side);
     } else if (act === "start") {
       this.startLocal();
     } else if (act === "ready") {

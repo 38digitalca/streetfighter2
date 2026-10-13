@@ -12,35 +12,31 @@ export function esc(value: string): string {
   });
 }
 
-function card(id: string, selected: boolean, side: "p1" | "p2"): string {
-  const fighter = CHARACTERS[id];
-  return `<button type="button" class="card${selected ? " is-on" : ""}" style="--accent:${fighter.palette.accent}" data-act="pick" data-side="${side}" data-arg="${id}">
-    <canvas class="portrait" data-char="${id}" width="240" height="264"></canvas>
-    <span class="card-name">${esc(fighter.name)}</span>
-    <span class="card-title">${esc(fighter.title)}</span>
-    <span class="card-special">${esc(fighter.specialName)}</span>
+function face(id: string, p1: string, p2: string): string {
+  const on = `${id === p1 ? " is-p1" : ""}${id === p2 ? " is-p2" : ""}`;
+  return `<button type="button" class="face${on}" data-act="pick" data-side="p1" data-arg="${id}" aria-label="${esc(CHARACTERS[id].name)}">
+    <canvas class="bust" data-char="${id}" data-face="1" width="96" height="120"></canvas>
   </button>`;
 }
 
-function roster(selected: string, side: "p1" | "p2"): string {
-  return `<div class="roster">${ROSTER.map((id) => card(id, id === selected, side)).join("")}</div>`;
+function plate(side: "1" | "2", id: string | null): string {
+  const faceDir = side === "1" ? "1" : "-1";
+  const name = id && CHARACTERS[id] ? CHARACTERS[id].name.toUpperCase() : "WAITING";
+  return `<figure class="plate plate-${side}">
+    <canvas class="bust" data-char="${id ?? ""}" data-face="${faceDir}" width="96" height="120"></canvas>
+    <figcaption class="nameplate"><span class="who">${side}P</span><span class="fname">${esc(name)}</span></figcaption>
+  </figure>`;
 }
 
 export function titleHtml(error: string): string {
-  return `<section class="title">
-    <p class="kicker">Original two-player fighter</p>
-    <h1>Cinder<br>Alley</h1>
-    <p class="lede">Best of three on a wet street. Block high, block low, and do not eat the dart.</p>
+  return `<section class="title pixel">
+    <p class="kicker">Player select</p>
+    <h1>CINDER<br>ALLEY</h1>
     <div class="menu">
       <button type="button" class="primary" data-act="online">Fight online</button>
-      <button type="button" data-act="local">Same keyboard</button>
+      <button type="button" data-act="local">Versus</button>
       <button type="button" data-act="practice">Practice</button>
     </div>
-    <ul class="rules">
-      <li>Hold the direction away from your rival to block.</li>
-      <li>Down-back stops low kicks. Standing block stops jump-ins.</li>
-      <li>First fighter to win two rounds takes the alley.</li>
-    </ul>
     <p class="error">${esc(error)}</p>
   </section>`;
 }
@@ -66,29 +62,18 @@ export function onlineHtml(name: string, code: string, error: string, busy: bool
 
 export function setupHtml(mode: "local" | "practice", n1: string, n2: string, c1: string, c2: string): string {
   const practice = mode === "practice";
-  const left = CHARACTERS[c1];
-  const right = CHARACTERS[c2];
-  return `<section class="panel wide">
-    <p class="kicker">${practice ? "Practice" : "Same keyboard"}</p>
-    <h2>${practice ? "Pick your fight" : "Who's on which side"}</h2>
-    <div class="split">
-      <div>
-        <label>${practice ? "Your name" : "Left fighter"} <input id="n1" maxlength="16" value="${esc(n1)}" /></label>
-        ${roster(c1, "p1")}
-        <p class="blurb">${esc(left.blurb)}</p>
-      </div>
-      <div>
-        <label>${practice ? "Practice partner" : "Right fighter"} <input id="n2" maxlength="16" value="${esc(n2)}" ${practice ? "disabled" : ""} /></label>
-        ${roster(c2, "p2")}
-        <p class="blurb">${esc(right.blurb)}</p>
-      </div>
-    </div>
-    <p class="status">${practice
-      ? "You use A D to move, W to jump, S to crouch, J punch, K kick, L special."
-      : "Left uses A D, W, S, and F G H. Right uses the arrow keys and U I O."}</p>
-    <div class="row">
+  const blurb = CHARACTERS[c1]?.blurb ?? "";
+  return `<section class="select">
+    <h2 class="select-title">PLAYER SELECT</h2>
+    ${plate("1", c1)}
+    ${plate("2", c2)}
+    <div class="faces">${ROSTER.map((id) => face(id, c1, c2)).join("")}</div>
+    <div class="select-bar">
       <button type="button" data-act="back">Back</button>
-      <button type="button" class="primary" data-act="start">${practice ? "Start practice" : "Start bout"}</button>
+      <label class="pixel-field">1P <input id="n1" maxlength="16" value="${esc(n1)}" /></label>
+      ${practice ? "" : `<label class="pixel-field">2P <input id="n2" maxlength="16" value="${esc(n2)}" /></label>`}
+      <p class="blurb">${esc(blurb)} Click a portrait for 1P. Right-click for 2P.</p>
+      <button type="button" class="primary" data-act="start">${practice ? "Start" : "Start"}</button>
     </div>
   </section>`;
 }
@@ -101,40 +86,25 @@ export function lobbyHtml(opts: {
   copied: boolean;
   error: string;
 }): string {
-  const you = opts.players[opts.slot];
-  const them = opts.players[opts.slot === 0 ? 1 : 0];
-  const fallback = opts.slot === 0 ? "vesper" : "brass";
-  const yours = you?.character && CHARACTERS[you.character] ? you.character : fallback;
-  const rival = them?.character && CHARACTERS[them.character]
-    ? `<canvas class="portrait" data-char="${them.character}" width="240" height="264"></canvas>
-       <strong>${esc(them.name)}</strong>
-       <span class="card-title">${esc(CHARACTERS[them.character].title)}</span>
-       <span class="status">${them.ready ? "Ready" : "Choosing"}</span>
-       <p class="blurb">${esc(CHARACTERS[them.character].blurb)}</p>`
-    : `<p class="lede">${them ? `${esc(them.name)} is choosing a fighter.` : "Share the code. The other fighter opens the link and joins this room."}</p>`;
-  return `<section class="panel wide">
-    <div class="roomline">
-      <div>
-        <p class="kicker">Room</p>
-        <p class="code">${esc(opts.code)}</p>
-      </div>
+  const p1 = opts.players[0];
+  const p2 = opts.players[1];
+  const c1 = p1?.character && CHARACTERS[p1.character] ? p1.character : "";
+  const c2 = p2?.character && CHARACTERS[p2.character] ? p2.character : "";
+  const mine = opts.players[opts.slot];
+  const blurb = (mine?.character && CHARACTERS[mine.character]?.blurb) || "Pick a fighter, then ready.";
+  return `<section class="select">
+    <h2 class="select-title">PLAYER SELECT</h2>
+    <p class="room-flag">ROOM ${esc(opts.code)}</p>
+    ${plate("1", c1 || null)}
+    ${plate("2", c2 || null)}
+    <div class="faces">${ROSTER.map((id) => face(id, c1, c2)).join("")}</div>
+    <div class="select-bar">
+      <button type="button" data-act="back">Leave</button>
       <button type="button" data-act="copy">${opts.copied ? "Copied" : "Copy link"}</button>
+      <input class="linkbox" id="link" readonly value="${esc(opts.link)}" />
+      <p class="blurb">${esc(blurb)}</p>
+      <button type="button" class="primary" data-act="ready">${mine?.ready ? "Cancel" : "Ready"}</button>
     </div>
-    <input class="linkbox" id="link" readonly value="${esc(opts.link)}" />
-    <div class="split">
-      <div>
-        <h3>You · ${esc(you?.name || "You")}</h3>
-        ${roster(yours, "p1")}
-        <div class="row">
-          <button type="button" class="primary" data-act="ready">${you?.ready ? "Cancel ready" : "Ready"}</button>
-        </div>
-      </div>
-      <div class="rival">
-        <h3>Rival</h3>
-        ${rival}
-      </div>
-    </div>
-    <div class="row"><button type="button" data-act="back">Leave</button></div>
     <p class="error">${esc(opts.error)}</p>
   </section>`;
 }

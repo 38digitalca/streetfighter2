@@ -209,15 +209,37 @@ function hair(ctx: CanvasRenderingContext2D, style: Hair, y: number, color: stri
     ctx.ellipse(0, y - 6, 16, 11, 0, Math.PI, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
-  } else if (style === "cap") {
-    ctx.fillStyle = "#102028";
+  } else if (style === "cap" || style === "hood") {
+    ctx.fillStyle = style === "hood" ? color : "#102028";
     ctx.beginPath();
     ctx.ellipse(0, y - 8, 17, 10, 0, Math.PI, Math.PI * 2);
     ctx.fill();
     ctx.fillRect(-16, y - 10, 34, 6);
-    ctx.fillStyle = color;
-    ctx.fillRect(12, y - 8, 12, 4);
+    if (style === "cap") {
+      ctx.fillStyle = color;
+      ctx.fillRect(12, y - 8, 12, 4);
+    }
     ctx.strokeRect(-16, y - 10, 34, 6);
+  } else if (style === "bun") {
+    ctx.beginPath();
+    ctx.ellipse(0, y - 6, 16, 11, 0, Math.PI, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(-12, y - 10, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+  } else if (style === "mane") {
+    ctx.beginPath();
+    ctx.ellipse(0, y, 18, 16, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillRect(-18, y, 10, 22);
+    ctx.stroke();
+  } else if (style === "braid") {
+    ctx.beginPath();
+    ctx.ellipse(0, y - 6, 16, 11, 0, Math.PI, Math.PI * 2);
+    ctx.fill();
+    ctx.fillRect(-18, y, 6, 26);
+    ctx.stroke();
   } else {
     ctx.beginPath();
     ctx.ellipse(0, y + 2, 18, 20, 0, 0, Math.PI * 2);
@@ -304,11 +326,6 @@ function drawFighter(ctx: CanvasRenderingContext2D, f: Fighter, cam: number, tic
   ctx.scale(f.facing * 1.12, 1.12);
   paintLocal(ctx, f, tick);
   ctx.restore();
-}
-
-function round(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
-  ctx.beginPath();
-  ctx.roundRect(x, y, w, h, r);
 }
 
 function skyline(ctx: CanvasRenderingContext2D, cam: number) {
@@ -467,24 +484,20 @@ function diamond(ctx: CanvasRenderingContext2D, x: number, y: number, on: boolea
   ctx.stroke();
 }
 
-function bar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, hp: number, chip: number, max: number, align: "left" | "right", accent: string) {
-  round(ctx, x, y, w, 16, 3);
-  ctx.fillStyle = "#1a100e";
-  ctx.fill();
+function bar(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, hp: number, chip: number, max: number, align: "left" | "right") {
+  ctx.fillStyle = "#07080c";
+  ctx.fillRect(x - 3, y - 3, w + 6, 22);
+  ctx.strokeStyle = "#f4f1e8";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(x - 3, y - 3, w + 6, 22);
   const pct = Math.max(0, hp / max);
   const chipPct = Math.max(pct, chip / max);
-  ctx.fillStyle = "#7f1d1d";
-  if (align === "left") ctx.fillRect(x, y, w * chipPct, 16);
-  else ctx.fillRect(x + w * (1 - chipPct), y, w * chipPct, 16);
-  const grad = ctx.createLinearGradient(x, y, x + w, y);
-  grad.addColorStop(0, pct < 0.3 ? "#ef4444" : "#f2c14e");
-  grad.addColorStop(1, pct < 0.3 ? "#7f1d1d" : accent);
-  ctx.fillStyle = grad;
-  if (align === "left") ctx.fillRect(x, y, w * pct, 16);
-  else ctx.fillRect(x + w * (1 - pct), y, w * pct, 16);
-  ctx.strokeStyle = "#f6ead8";
-  ctx.lineWidth = 1.5;
-  ctx.stroke();
+  const chipX = align === "left" ? x : x + w * (1 - chipPct);
+  const hpX = align === "left" ? x : x + w * (1 - pct);
+  ctx.fillStyle = "#c4322a";
+  ctx.fillRect(chipX, y, w * chipPct, 16);
+  ctx.fillStyle = pct < 0.3 ? "#ff5a3c" : "#ffe14a";
+  ctx.fillRect(hpX, y, w * pct, 16);
 }
 
 function drawHud(ctx: CanvasRenderingContext2D, state: MatchState, opt: RenderOpts) {
@@ -495,17 +508,18 @@ function drawHud(ctx: CanvasRenderingContext2D, state: MatchState, opt: RenderOp
     const f = state.fighters[side];
     const ch = CHARACTERS[f.charId];
     const x = side === 0 ? 36 : VIEW_W - 36 - w;
-    ctx.font = '600 13px Outfit, "Segoe UI", sans-serif';
-    ctx.fillStyle = "#f6efe6";
+    ctx.font = '10px "Press Start 2P", Impact, sans-serif';
+    ctx.fillStyle = "#f4f7ff";
     ctx.textAlign = side === 0 ? "left" : "right";
     const nameX = side === 0 ? x : x + w;
-    ctx.fillText(f.name.toUpperCase(), nameX, y - 18);
+    const plate = (ch?.name ?? f.name).toUpperCase();
+    ctx.fillText(plate, nameX, y - 16);
     if (opt.localSlot === side) {
-      ctx.fillStyle = ch?.palette.accent ?? "#e4572e";
-      ctx.font = "700 10px Outfit, sans-serif";
-      ctx.fillText("YOU", nameX, y - 32);
+      ctx.fillStyle = "#ffe14a";
+      ctx.font = '8px "Press Start 2P", Impact, sans-serif';
+      ctx.fillText("YOU", nameX, y - 30);
     }
-    bar(ctx, x, y, w, f.hp, opt.chip[side], f.maxHp, side === 0 ? "left" : "right", ch?.palette.accent ?? "#f2c14e");
+    bar(ctx, x, y, w, f.hp, opt.chip[side], f.maxHp, side === 0 ? "left" : "right");
     const pipY = y + 8;
     const pipStart = side === 0 ? x + w + 16 : x - 16;
     diamond(ctx, pipStart, pipY, f.wins > 0);
@@ -526,16 +540,15 @@ function drawHud(ctx: CanvasRenderingContext2D, state: MatchState, opt: RenderOp
   }
 
   ctx.textAlign = "center";
-  round(ctx, VIEW_W / 2 - 36, 62, 72, 42, 8);
-  ctx.fillStyle = "#140e0c";
-  ctx.fill();
-  ctx.strokeStyle = "#f2c14e";
-  ctx.lineWidth = 2;
-  ctx.stroke();
-  ctx.fillStyle = state.timer <= 10 ? "#ef4444" : "#f6efe6";
-  ctx.font = '400 28px "Archivo Black", Impact, sans-serif';
+  ctx.fillStyle = "#07080c";
+  ctx.fillRect(VIEW_W / 2 - 36, 58, 72, 40);
+  ctx.strokeStyle = "#ffe14a";
+  ctx.lineWidth = 3;
+  ctx.strokeRect(VIEW_W / 2 - 36, 58, 72, 40);
+  ctx.fillStyle = state.timer <= 10 ? "#ff5a3c" : "#ffe14a";
+  ctx.font = '16px "Press Start 2P", Impact, sans-serif';
   ctx.textBaseline = "middle";
-  ctx.fillText(String(state.timer).padStart(2, "0"), VIEW_W / 2, 84);
+  ctx.fillText(String(state.timer).padStart(2, "0"), VIEW_W / 2, 80);
 
   for (const f of state.fighters) {
     if (f.combo < 2) continue;
