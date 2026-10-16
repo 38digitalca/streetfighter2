@@ -1,4 +1,4 @@
-app = "cinder-alley"
+app = "street-fighter-ii"
 primary_region = "iad"
 
 [build]
