@@ -2,10 +2,16 @@ export type Pose = "portrait" | "idle" | "punch" | "kick" | "jump" | "special" |
 
 const POSES: Pose[] = ["portrait", "idle", "punch", "kick", "jump", "special", "crouch"];
 
-export const PAINTED = ["ryu", "honda"] as const;
+export const PAINTED = ["ryu", "ken", "honda", "chunli", "blanka", "guile", "zangief", "dhalsim"] as const;
 
 const FILE_ALIAS: Record<string, Partial<Record<Pose, string>>> = {
   ryu: { special: "hadoken" },
+  ken: { idle: "special", punch: "special", kick: "special", jump: "special", crouch: "special" },
+  blanka: { idle: "roll", punch: "roll", kick: "roll", jump: "roll", special: "roll", crouch: "roll" },
+  chunli: { punch: "idle", crouch: "idle", jump: "kick", special: "kick" },
+  guile: { punch: "idle", crouch: "idle", special: "idle", jump: "kick" },
+  zangief: { kick: "idle", crouch: "idle", punch: "lariat", jump: "lariat", special: "pile" },
+  dhalsim: { punch: "idle", kick: "idle", crouch: "idle", jump: "special" },
 };
 
 const images = new Map<string, HTMLImageElement>();

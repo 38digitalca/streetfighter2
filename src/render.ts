@@ -336,7 +336,13 @@ function paintedPose(f: Fighter): SpritePose {
 
 const PAINT_HEIGHT: Record<string, Partial<Record<SpritePose, number>>> = {
   ryu: { crouch: 118, jump: 156, idle: 168 },
+  ken: { crouch: 128, jump: 172, special: 176, idle: 170 },
   honda: { crouch: 128, jump: 150, special: 146, idle: 180 },
+  chunli: { crouch: 128, kick: 156, jump: 156, special: 156, idle: 170 },
+  blanka: { crouch: 124, jump: 150, special: 156, idle: 158 },
+  guile: { crouch: 130, kick: 158, jump: 158, idle: 174 },
+  zangief: { crouch: 148, punch: 176, jump: 170, special: 168, idle: 198 },
+  dhalsim: { crouch: 168, jump: 200, special: 210, idle: 220 },
 };
 
 function paintHeight(id: string, pose: SpritePose): number {
@@ -359,7 +365,8 @@ function drawPainted(ctx: CanvasRenderingContext2D, f: Fighter, tick: number): b
   if (f.onGround && f.action !== "jump") {
     ctx.fillStyle = "rgba(0,0,0,0.38)";
     ctx.beginPath();
-    ctx.ellipse(0, -3, f.charId === "honda" ? 42 : pose === "crouch" ? 36 : 30, 8, 0, 0, Math.PI * 2);
+    const broad = f.charId === "honda" || f.charId === "zangief" || f.charId === "blanka";
+    ctx.ellipse(0, -3, broad ? 42 : pose === "crouch" ? 36 : 30, 8, 0, 0, Math.PI * 2);
     ctx.fill();
   }
   if (f.action === "walk") ctx.translate(0, -Math.abs(Math.sin(tick / 3.4)) * 4);

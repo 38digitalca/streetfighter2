@@ -100,7 +100,13 @@ function drawFlag(ctx: CanvasRenderingContext2D, flag: Flag, hot: boolean) {
 
 const FOCAL: Record<string, { x: number; y: number }> = {
   ryu: { x: 0.62, y: 0.34 },
+  ken: { x: 0.52, y: 0.4 },
   honda: { x: 0.58, y: 0.32 },
+  chunli: { x: 0.42, y: 0.3 },
+  blanka: { x: 0.48, y: 0.44 },
+  guile: { x: 0.5, y: 0.3 },
+  zangief: { x: 0.5, y: 0.34 },
+  dhalsim: { x: 0.46, y: 0.38 },
 };
 
 function drawPhotoBust(ctx: CanvasRenderingContext2D, id: string, face: 1 | -1) {
