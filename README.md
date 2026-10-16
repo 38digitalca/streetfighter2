@@ -18,7 +18,17 @@ npm run build
 npm start
 ```
 
-`npm start` serves the built site and the match server on port 43123 (override with `PORT`).
+`npm start` serves the built site and the match server on port 43123 (override with `PORT`). In production the server listens on `0.0.0.0`.
+
+## Fly.io
+
+The match server keeps rooms in memory and serves the built site plus the `/ws` socket on one port. Deploy with the Fly CLI after `fly auth login`:
+
+```bash
+fly launch --yes --now --copy-config
+```
+
+The app listens on port 8080 inside the machine. Fly terminates HTTPS, and the browser opens the socket on the same host.
 
 ## Online matches
 

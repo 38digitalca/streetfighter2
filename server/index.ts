@@ -384,7 +384,7 @@ const invoked = process.argv[1] ? pathToFileURL(process.argv[1]).href : "";
 if (import.meta.url === invoked) {
   const prod = process.env.NODE_ENV === "production";
   const port = Number(process.env.PORT) || (prod ? 43123 : 43124);
-  const host = process.env.HOST || "127.0.0.1";
+  const host = process.env.HOST || (prod ? "0.0.0.0" : "127.0.0.1");
   void startServer(port, host).then((running) => {
     console.log(`Cinder Alley match server on http://${host}:${running.port}`);
   });

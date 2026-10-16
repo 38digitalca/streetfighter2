@@ -1,0 +1,10 @@
+node_modules
+dist
+.git
+.cursor
+tests
+*.log
+.env
+.env.*
+coverage
+.vite
