@@ -1,6 +1,7 @@
 import { CHARACTERS, ROSTER } from "../shared/characters";
 import type { LobbySeat } from "../shared/protocol";
 import { drawPortrait } from "./render";
+import { isPainted } from "./sprites";
 
 export function esc(value: string): string {
   return value.replace(/[&<>"']/g, (ch) => {
@@ -13,7 +14,7 @@ export function esc(value: string): string {
 }
 
 function bust(id: string, faceDir: "1" | "-1"): string {
-  const photo = id === "ryu";
+  const photo = isPainted(id);
   const w = photo ? 480 : 96;
   const h = photo ? 600 : 120;
   const mark = photo ? ` data-photo="1"` : "";

@@ -1,7 +1,7 @@
 import { CHARACTERS } from "../shared/characters";
 import { VIEW_H, VIEW_W } from "../shared/types";
 import { blitPortrait, PORTRAITS } from "./portraits";
-import { ryuSprite } from "./sprites";
+import { fighterSprite } from "./sprites";
 
 const LAND: number[][][] = [
   [[4, 28], [12, 16], [22, 14], [32, 20], [34, 36], [26, 48], [16, 52], [8, 44], [4, 36]],
@@ -98,8 +98,13 @@ function drawFlag(ctx: CanvasRenderingContext2D, flag: Flag, hot: boolean) {
   ctx.restore();
 }
 
-function drawPhotoBust(ctx: CanvasRenderingContext2D, face: 1 | -1) {
-  const photo = ryuSprite("portrait");
+const FOCAL: Record<string, { x: number; y: number }> = {
+  ryu: { x: 0.62, y: 0.34 },
+  honda: { x: 0.58, y: 0.32 },
+};
+
+function drawPhotoBust(ctx: CanvasRenderingContext2D, id: string, face: 1 | -1) {
+  const photo = fighterSprite(id, "portrait");
   const canvas = ctx.canvas;
   if (!photo) return false;
   ctx.imageSmoothingEnabled = true;
@@ -111,8 +116,9 @@ function drawPhotoBust(ctx: CanvasRenderingContext2D, face: 1 | -1) {
   const scale = Math.max(canvas.width / photo.width, canvas.height / photo.height);
   const w = photo.width * scale;
   const h = photo.height * scale;
-  const focalX = photo.width * 0.62;
-  const focalY = photo.height * 0.34;
+  const focal = FOCAL[id] ?? { x: 0.5, y: 0.35 };
+  const focalX = photo.width * focal.x;
+  const focalY = photo.height * focal.y;
   let dx = canvas.width / 2 - focalX * scale;
   let dy = canvas.height * 0.42 - focalY * scale;
   dx = Math.min(0, Math.max(canvas.width - w, dx));
@@ -132,7 +138,7 @@ export function drawBust(ctx: CanvasRenderingContext2D, id: string, face: 1 | -1
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.imageSmoothingEnabled = false;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  if (id === "ryu" && drawPhotoBust(ctx, face)) return;
+  if (drawPhotoBust(ctx, id, face)) return;
   const sprite = PORTRAITS[id];
   if (!sprite) {
     ctx.fillStyle = "#d8e4f8";

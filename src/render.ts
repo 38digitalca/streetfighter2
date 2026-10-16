@@ -2,7 +2,7 @@ import { CHARACTERS } from "../shared/characters";
 import { attackBox, bodyBox, createMatch, moveFor, windup } from "../shared/sim";
 import type { BodyShape, Character, Fighter, Hair, MatchState } from "../shared/types";
 import { GROUND_Y, STAGE_W, VIEW_H, VIEW_W } from "../shared/types";
-import { ryuSprite, type RyuPose } from "./sprites";
+import { fighterSprite, isPainted, type Pose as FighterPose } from "./sprites";
 
 export interface Floater {
   x: number;
@@ -323,8 +323,10 @@ function paintLocal(ctx: CanvasRenderingContext2D, f: Fighter, tick: number) {
   ctx.restore();
 }
 
-function ryuPose(f: Fighter): Exclude<RyuPose, "portrait"> {
-  if (f.action === "special") return "hadoken";
+type SpritePose = Exclude<FighterPose, "portrait">;
+
+function paintedPose(f: Fighter): SpritePose {
+  if (f.action === "special") return "special";
   if (f.action === "jump" || f.action === "airPunch" || f.action === "airKick") return "jump";
   if (f.action === "punch" || f.action === "crouchPunch") return "punch";
   if (f.action === "kick" || f.action === "crouchKick") return "kick";
@@ -332,13 +334,24 @@ function ryuPose(f: Fighter): Exclude<RyuPose, "portrait"> {
   return "idle";
 }
 
+const PAINT_HEIGHT: Record<string, Partial<Record<SpritePose, number>>> = {
+  ryu: { crouch: 118, jump: 156, idle: 168 },
+  honda: { crouch: 128, jump: 150, special: 146, idle: 180 },
+};
+
+function paintHeight(id: string, pose: SpritePose): number {
+  const table = PAINT_HEIGHT[id];
+  return table?.[pose] ?? table?.idle ?? 168;
+}
+
 const flashCanvas = typeof document === "undefined" ? null : document.createElement("canvas");
 
-function drawRyu(ctx: CanvasRenderingContext2D, f: Fighter, tick: number): boolean {
-  const pose = ryuPose(f);
-  const img = ryuSprite(pose);
+function drawPainted(ctx: CanvasRenderingContext2D, f: Fighter, tick: number): boolean {
+  if (!isPainted(f.charId)) return false;
+  const pose = paintedPose(f);
+  const img = fighterSprite(f.charId, pose);
   if (!img) return false;
-  const height = pose === "crouch" ? 118 : pose === "jump" ? 156 : 168;
+  const height = paintHeight(f.charId, pose);
   const scale = height / img.height;
   const w = img.width * scale;
   const h = img.height * scale;
@@ -346,7 +359,7 @@ function drawRyu(ctx: CanvasRenderingContext2D, f: Fighter, tick: number): boole
   if (f.onGround && f.action !== "jump") {
     ctx.fillStyle = "rgba(0,0,0,0.38)";
     ctx.beginPath();
-    ctx.ellipse(0, -3, pose === "crouch" ? 36 : 30, 7, 0, 0, Math.PI * 2);
+    ctx.ellipse(0, -3, f.charId === "honda" ? 42 : pose === "crouch" ? 36 : 30, 8, 0, 0, Math.PI * 2);
     ctx.fill();
   }
   if (f.action === "walk") ctx.translate(0, -Math.abs(Math.sin(tick / 3.4)) * 4);
@@ -380,7 +393,7 @@ function drawFighter(ctx: CanvasRenderingContext2D, f: Fighter, cam: number, tic
   ctx.save();
   ctx.translate(f.x - cam, f.y);
   ctx.scale(f.facing * 1.12, 1.12);
-  if (f.charId !== "ryu" || !drawRyu(ctx, f, tick)) paintLocal(ctx, f, tick);
+  if (!drawPainted(ctx, f, tick)) paintLocal(ctx, f, tick);
   ctx.restore();
 }
 
