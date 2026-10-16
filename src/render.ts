@@ -338,7 +338,7 @@ function drawRyu(ctx: CanvasRenderingContext2D, f: Fighter, tick: number): boole
   const pose = ryuPose(f);
   const img = ryuSprite(pose);
   if (!img) return false;
-  const height = pose === "crouch" ? 142 : pose === "jump" ? 188 : 206;
+  const height = pose === "crouch" ? 118 : pose === "jump" ? 156 : 168;
   const scale = height / img.height;
   const w = img.width * scale;
   const h = img.height * scale;
@@ -657,7 +657,7 @@ export function render(ctx: CanvasRenderingContext2D, state: MatchState, opt: Re
   for (const bolt of state.bolts) {
     const owner = state.fighters[bolt.owner];
     const hadoken = owner?.charId === "ryu";
-    if (hadoken && owner && (bolt.x - owner.x) * owner.facing < 98) continue;
+    if (hadoken && owner && (bolt.x - owner.x) * owner.facing < 128) continue;
     drawBolt(ctx, bolt.x, bolt.y, cam, hadoken);
   }
   const order = [...state.fighters].sort((a, b) => a.x - b.x);
