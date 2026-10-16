@@ -156,9 +156,32 @@ export function drawBust(ctx: CanvasRenderingContext2D, id: string, face: 1 | -1
   blitPortrait(ctx, id, face, face === 1 ? dx : dx + w * scale, dy, scale);
 }
 
-export function renderAtlas(ctx: CanvasRenderingContext2D, dpr: number, selected: [string, string] | null) {
+const globe = new Image();
+let globeReady = false;
+globe.onload = () => {
+  globeReady = true;
+};
+globe.src = "/select/globe.jpg";
+
+function drawGlobe(ctx: CanvasRenderingContext2D) {
+  const scale = Math.max(VIEW_W / globe.width, VIEW_H / globe.height);
+  const w = globe.width * scale;
+  const h = globe.height * scale;
+  ctx.drawImage(globe, (VIEW_W - w) / 2, (VIEW_H - h) / 2, w, h);
+}
+
+export function renderAtlas(
+  ctx: CanvasRenderingContext2D,
+  dpr: number,
+  selected: [string, string] | null,
+  backdrop: "map" | "globe" = "map",
+) {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.imageSmoothingEnabled = true;
+  if (backdrop === "globe" && globeReady) {
+    drawGlobe(ctx);
+    return;
+  }
   const wash = ctx.createLinearGradient(0, 0, 0, VIEW_H);
   wash.addColorStop(0, "#7ec0f0");
   wash.addColorStop(1, "#2f78c4");

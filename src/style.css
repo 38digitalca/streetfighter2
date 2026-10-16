@@ -300,11 +300,11 @@ label { display: grid; gap: 0.35rem; font-size: 0.86rem; font-weight: 600; margi
   right: 0;
   margin: 0;
   text-align: center;
-  color: #fff;
+  color: transparent;
   font-family: "Press Start 2P", monospace;
   font-size: clamp(12px, 2.1vw, 18px);
   letter-spacing: 0.14em;
-  text-shadow: 3px 3px 0 #071226;
+  text-shadow: none;
 }
 .room-flag {
   position: absolute;
