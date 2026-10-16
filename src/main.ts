@@ -11,6 +11,7 @@ import { Controls } from "./input";
 import { Link } from "./net";
 import { render } from "./render";
 import { paintBusts, renderAtlas } from "./selectart";
+import { loadRyuArt, whenRyuArtReady } from "./sprites";
 import { fightHtml, lobbyHtml, onlineHtml, setupHtml, titleHtml } from "./ui";
 
 type Mode = "online" | "local" | "practice";
@@ -56,6 +57,10 @@ class Game {
     this.invited = cleanCode(params.get("room") ?? "") ?? "";
     if (this.invited) this.screen = "online";
     this.controls = new Controls(this.touch);
+    void loadRyuArt();
+    whenRyuArtReady(() => {
+      if (this.screen === "setup" || this.screen === "lobby") paintBusts(this.ui);
+    });
     this.ui.addEventListener("click", (event) => {
       const target = (event.target as Element | null)?.closest?.("[data-act]");
       if (!(target instanceof HTMLElement)) return;

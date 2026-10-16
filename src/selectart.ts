@@ -1,6 +1,7 @@
 import { CHARACTERS } from "../shared/characters";
 import { VIEW_H, VIEW_W } from "../shared/types";
 import { blitPortrait, PORTRAITS } from "./portraits";
+import { ryuSprite } from "./sprites";
 
 const LAND: number[][][] = [
   [[4, 28], [12, 16], [22, 14], [32, 20], [34, 36], [26, 48], [16, 52], [8, 44], [4, 36]],
@@ -97,11 +98,41 @@ function drawFlag(ctx: CanvasRenderingContext2D, flag: Flag, hot: boolean) {
   ctx.restore();
 }
 
+function drawPhotoBust(ctx: CanvasRenderingContext2D, face: 1 | -1) {
+  const photo = ryuSprite("portrait");
+  const canvas = ctx.canvas;
+  if (!photo) return false;
+  ctx.imageSmoothingEnabled = true;
+  const sky = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  sky.addColorStop(0, "#16325f");
+  sky.addColorStop(1, "#071428");
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  const scale = Math.max(canvas.width / photo.width, canvas.height / photo.height);
+  const w = photo.width * scale;
+  const h = photo.height * scale;
+  const focalX = photo.width * 0.62;
+  const focalY = photo.height * 0.34;
+  let dx = canvas.width / 2 - focalX * scale;
+  let dy = canvas.height * 0.42 - focalY * scale;
+  dx = Math.min(0, Math.max(canvas.width - w, dx));
+  dy = Math.min(0, Math.max(canvas.height - h, dy));
+  ctx.save();
+  if (face === -1) {
+    ctx.translate(canvas.width, 0);
+    ctx.scale(-1, 1);
+  }
+  ctx.drawImage(photo, dx, dy, w, h);
+  ctx.restore();
+  return true;
+}
+
 export function drawBust(ctx: CanvasRenderingContext2D, id: string, face: 1 | -1) {
   const canvas = ctx.canvas;
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.imageSmoothingEnabled = false;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (id === "ryu" && drawPhotoBust(ctx, face)) return;
   const sprite = PORTRAITS[id];
   if (!sprite) {
     ctx.fillStyle = "#d8e4f8";

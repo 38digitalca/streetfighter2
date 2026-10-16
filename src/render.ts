@@ -2,6 +2,7 @@ import { CHARACTERS } from "../shared/characters";
 import { attackBox, bodyBox, createMatch, moveFor, windup } from "../shared/sim";
 import type { BodyShape, Character, Fighter, Hair, MatchState } from "../shared/types";
 import { GROUND_Y, STAGE_W, VIEW_H, VIEW_W } from "../shared/types";
+import { ryuSprite, type RyuPose } from "./sprites";
 
 export interface Floater {
   x: number;
@@ -322,11 +323,64 @@ function paintLocal(ctx: CanvasRenderingContext2D, f: Fighter, tick: number) {
   ctx.restore();
 }
 
+function ryuPose(f: Fighter): Exclude<RyuPose, "portrait"> {
+  if (f.action === "special") return "hadoken";
+  if (f.action === "jump" || f.action === "airPunch" || f.action === "airKick") return "jump";
+  if (f.action === "punch" || f.action === "crouchPunch") return "punch";
+  if (f.action === "kick" || f.action === "crouchKick") return "kick";
+  if (f.crouched) return "crouch";
+  return "idle";
+}
+
+const flashCanvas = typeof document === "undefined" ? null : document.createElement("canvas");
+
+function drawRyu(ctx: CanvasRenderingContext2D, f: Fighter, tick: number): boolean {
+  const pose = ryuPose(f);
+  const img = ryuSprite(pose);
+  if (!img) return false;
+  const height = pose === "crouch" ? 142 : pose === "jump" ? 188 : 206;
+  const scale = height / img.height;
+  const w = img.width * scale;
+  const h = img.height * scale;
+  ctx.save();
+  if (f.onGround && f.action !== "jump") {
+    ctx.fillStyle = "rgba(0,0,0,0.38)";
+    ctx.beginPath();
+    ctx.ellipse(0, -3, pose === "crouch" ? 36 : 30, 7, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  if (f.action === "walk") ctx.translate(0, -Math.abs(Math.sin(tick / 3.4)) * 4);
+  if (f.action === "hit") ctx.rotate(-0.22);
+  else if (f.action === "launch") ctx.rotate(0.45);
+  else if (f.action === "down" || (f.action === "ko" && f.onGround)) ctx.rotate(-1.15);
+  else if (f.action === "ko") ctx.rotate(0.35);
+  ctx.imageSmoothingEnabled = true;
+  const x = -w / 2;
+  const y = -h;
+  if (f.flash > 0 && flashCanvas) {
+    flashCanvas.width = img.width;
+    flashCanvas.height = img.height;
+    const g = flashCanvas.getContext("2d");
+    if (g) {
+      g.clearRect(0, 0, img.width, img.height);
+      g.drawImage(img, 0, 0);
+      g.globalCompositeOperation = "source-atop";
+      g.fillStyle = `rgba(255,246,238,${Math.min(0.8, f.flash / 8)})`;
+      g.fillRect(0, 0, img.width, img.height);
+      ctx.drawImage(flashCanvas, x, y, w, h);
+    } else ctx.drawImage(img, x, y, w, h);
+  } else {
+    ctx.drawImage(img, x, y, w, h);
+  }
+  ctx.restore();
+  return true;
+}
+
 function drawFighter(ctx: CanvasRenderingContext2D, f: Fighter, cam: number, tick: number) {
   ctx.save();
   ctx.translate(f.x - cam, f.y);
   ctx.scale(f.facing * 1.12, 1.12);
-  paintLocal(ctx, f, tick);
+  if (f.charId !== "ryu" || !drawRyu(ctx, f, tick)) paintLocal(ctx, f, tick);
   ctx.restore();
 }
 
@@ -432,13 +486,13 @@ function drawWorld(ctx: CanvasRenderingContext2D, state: MatchState, cam: number
   ctx.fillRect(0, GROUND_Y + 22, VIEW_W, 12);
 }
 
-function drawBolt(ctx: CanvasRenderingContext2D, x: number, y: number, cam: number) {
+function drawBolt(ctx: CanvasRenderingContext2D, x: number, y: number, cam: number, hadoken = false) {
   ctx.save();
   ctx.translate(x - cam, y);
-  ctx.strokeStyle = "#f3e8ff";
-  ctx.fillStyle = "#d8b4fe";
+  ctx.strokeStyle = hadoken ? "#e7fbff" : "#f3e8ff";
+  ctx.fillStyle = hadoken ? "#7ee7ff" : "#d8b4fe";
   ctx.lineWidth = 3;
-  ctx.shadowColor = "#c084fc";
+  ctx.shadowColor = hadoken ? "#3ec8ff" : "#c084fc";
   ctx.shadowBlur = 14;
   ctx.beginPath();
   ctx.arc(0, 0, 11, 0.5, Math.PI - 0.2);
@@ -600,7 +654,12 @@ export function render(ctx: CanvasRenderingContext2D, state: MatchState, opt: Re
     ctx.ellipse(f.x - cam, GROUND_Y + 4, 26 * scale, 7 * scale, 0, 0, Math.PI * 2);
     ctx.fill();
   }
-  for (const bolt of state.bolts) drawBolt(ctx, bolt.x, bolt.y, cam);
+  for (const bolt of state.bolts) {
+    const owner = state.fighters[bolt.owner];
+    const hadoken = owner?.charId === "ryu";
+    if (hadoken && owner && (bolt.x - owner.x) * owner.facing < 98) continue;
+    drawBolt(ctx, bolt.x, bolt.y, cam, hadoken);
+  }
   const order = [...state.fighters].sort((a, b) => a.x - b.x);
   for (const f of order) drawFighter(ctx, f, cam, state.tick);
   for (const spark of state.sparks) drawSpark(ctx, spark.x, spark.y, spark.life, spark.max, spark.kind, cam);

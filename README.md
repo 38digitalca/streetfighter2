@@ -2,7 +2,7 @@
 
 An original two-player fighter for the browser. Create a room and send the link, play both fighters on one keyboard, or spar a practice partner.
 
-Cinder Alley borrows the rhythm of 1990s one-on-one arcade fighters: three rounds, a timer, specials, and a block that cares whether you are standing or crouching. The fighters, stage, and sounds are original.
+Cinder Alley borrows the rhythm of 1990s one-on-one arcade fighters: three rounds, a timer, specials, and a block that cares whether you are standing or crouching. The fighters, stage, and sounds are original. Ryu uses painted sprites on the select screen and in the match. The rest of the roster is still drawn in the match.
 
 ## Play
 

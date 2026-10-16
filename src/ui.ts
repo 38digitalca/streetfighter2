@@ -12,10 +12,18 @@ export function esc(value: string): string {
   });
 }
 
+function bust(id: string, faceDir: "1" | "-1"): string {
+  const photo = id === "ryu";
+  const w = photo ? 480 : 96;
+  const h = photo ? 600 : 120;
+  const mark = photo ? ` data-photo="1"` : "";
+  return `<canvas class="bust" data-char="${id}" data-face="${faceDir}" width="${w}" height="${h}"${mark}></canvas>`;
+}
+
 function face(id: string, p1: string, p2: string): string {
   const on = `${id === p1 ? " is-p1" : ""}${id === p2 ? " is-p2" : ""}`;
   return `<button type="button" class="face${on}" data-act="pick" data-side="p1" data-arg="${id}" aria-label="${esc(CHARACTERS[id].name)}">
-    <canvas class="bust" data-char="${id}" data-face="1" width="96" height="120"></canvas>
+    ${bust(id, "1")}
   </button>`;
 }
 
@@ -23,7 +31,7 @@ function plate(side: "1" | "2", id: string | null): string {
   const faceDir = side === "1" ? "1" : "-1";
   const name = id && CHARACTERS[id] ? CHARACTERS[id].name.toUpperCase() : "WAITING";
   return `<figure class="plate plate-${side}">
-    <canvas class="bust" data-char="${id ?? ""}" data-face="${faceDir}" width="96" height="120"></canvas>
+    ${bust(id ?? "", faceDir)}
     <figcaption class="nameplate"><span class="who">${side}P</span><span class="fname">${esc(name)}</span></figcaption>
   </figure>`;
 }

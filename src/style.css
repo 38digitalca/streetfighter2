@@ -370,6 +370,8 @@ label { display: grid; gap: 0.35rem; font-size: 0.86rem; font-weight: 600; margi
 .faces button.is-p2 { border-color: #3ec0ff; box-shadow: 0 0 0 2px #3ec0ff; }
 .faces button.is-p1.is-p2 { border-color: #fff; box-shadow: 0 0 0 2px #ff3b30, inset 0 0 0 2px #3ec0ff; }
 .faces canvas { width: 100%; height: auto; image-rendering: pixelated; display: block; pointer-events: none; }
+.plate canvas.bust[data-photo="1"],
+.faces canvas.bust[data-photo="1"] { image-rendering: auto; }
 .select-bar {
   position: absolute;
   left: 0;
