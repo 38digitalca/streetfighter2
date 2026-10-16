@@ -162,8 +162,12 @@ class Game {
     const ctx = this.canvas.getContext("2d");
     if (!ctx) return;
     if (!(this.screen === "fight" && this.match)) {
-      const selecting = this.screen === "setup" || this.screen === "lobby";
-      renderAtlas(ctx, this.dpr, this.atlasPicks(), selecting ? "globe" : "map");
+      const backdrop = this.screen === "setup" || this.screen === "lobby"
+        ? "globe"
+        : this.screen === "title"
+          ? "poster"
+          : "map";
+      renderAtlas(ctx, this.dpr, this.atlasPicks(), backdrop);
       return;
     }
     const state = this.match;

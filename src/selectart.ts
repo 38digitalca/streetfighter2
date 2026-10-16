@@ -169,23 +169,34 @@ globe.onload = () => {
 };
 globe.src = "/select/globe.jpg";
 
-function drawGlobe(ctx: CanvasRenderingContext2D) {
-  const scale = Math.max(VIEW_W / globe.width, VIEW_H / globe.height);
-  const w = globe.width * scale;
-  const h = globe.height * scale;
-  ctx.drawImage(globe, (VIEW_W - w) / 2, (VIEW_H - h) / 2, w, h);
+const poster = new Image();
+let posterReady = false;
+poster.onload = () => {
+  posterReady = true;
+};
+poster.src = "/title/front.jpg";
+
+function drawCover(ctx: CanvasRenderingContext2D, image: HTMLImageElement) {
+  const scale = Math.max(VIEW_W / image.width, VIEW_H / image.height);
+  const w = image.width * scale;
+  const h = image.height * scale;
+  ctx.drawImage(image, (VIEW_W - w) / 2, (VIEW_H - h) / 2, w, h);
 }
 
 export function renderAtlas(
   ctx: CanvasRenderingContext2D,
   dpr: number,
   selected: [string, string] | null,
-  backdrop: "map" | "globe" = "map",
+  backdrop: "map" | "globe" | "poster" = "map",
 ) {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.imageSmoothingEnabled = true;
+  if (backdrop === "poster" && posterReady) {
+    drawCover(ctx, poster);
+    return;
+  }
   if (backdrop === "globe" && globeReady) {
-    drawGlobe(ctx);
+    drawCover(ctx, globe);
     return;
   }
   const wash = ctx.createLinearGradient(0, 0, 0, VIEW_H);

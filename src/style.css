@@ -255,21 +255,22 @@ label { display: grid; gap: 0.35rem; font-size: 0.86rem; font-weight: 600; margi
 }
 
 .title.pixel {
-  width: min(640px, calc(100% - 24px));
-  margin: 0 auto 7%;
+  width: 100%;
+  margin: 0;
   text-align: center;
-  background: rgba(8, 20, 48, 0.78);
-  border: 4px solid #f2e04a;
-  padding: 16px 16px 12px;
+  background: linear-gradient(to top, rgba(4, 8, 18, 0.88), rgba(4, 8, 18, 0));
+  border: none;
+  padding: 42px 12px 14px;
 }
-.title.pixel h1 {
-  font-family: "Press Start 2P", monospace;
-  font-size: clamp(18px, 3.4vw, 28px);
-  line-height: 1.45;
-  letter-spacing: 0.04em;
-  text-shadow: 4px 4px 0 #071226;
+.title.pixel h1,
+.title.pixel .kicker {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
 }
-.title.pixel .kicker { color: #ffe14a; font-family: "Press Start 2P", monospace; font-size: 10px; }
 .title.pixel .menu { justify-content: center; }
 .title.pixel button, #ui.atlas .panel button, #ui.atlas .panel input, .select-bar button, .select-bar input {
   font-family: "Press Start 2P", monospace;
