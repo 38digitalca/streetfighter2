@@ -1,7 +1,7 @@
 import { CHARACTERS } from "../shared/characters";
 import { VIEW_H, VIEW_W } from "../shared/types";
 import { blitPortrait, PORTRAITS } from "./portraits";
-import { fighterSprite } from "./sprites";
+import { fighterSprite, loadImage } from "./sprites";
 
 const LAND: number[][][] = [
   [[4, 28], [12, 16], [22, 14], [32, 20], [34, 36], [26, 48], [16, 52], [8, 44], [4, 36]],
@@ -162,19 +162,14 @@ export function drawBust(ctx: CanvasRenderingContext2D, id: string, face: 1 | -1
   blitPortrait(ctx, id, face, face === 1 ? dx : dx + w * scale, dy, scale);
 }
 
-const globe = new Image();
-let globeReady = false;
-globe.onload = () => {
-  globeReady = true;
-};
-globe.src = "/select/globe.jpg";
-
-const poster = new Image();
-let posterReady = false;
-poster.onload = () => {
-  posterReady = true;
-};
-poster.src = "/title/front.jpg";
+let globe: HTMLImageElement | null = null;
+let poster: HTMLImageElement | null = null;
+void loadImage("/select/globe.jpg").then((img) => {
+  globe = img;
+});
+void loadImage("/title/front.jpg").then((img) => {
+  poster = img;
+});
 
 function drawCover(ctx: CanvasRenderingContext2D, image: HTMLImageElement) {
   const scale = Math.max(VIEW_W / image.width, VIEW_H / image.height);
@@ -191,11 +186,11 @@ export function renderAtlas(
 ) {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   ctx.imageSmoothingEnabled = true;
-  if (backdrop === "poster" && posterReady) {
+  if (backdrop === "poster" && poster) {
     drawCover(ctx, poster);
     return;
   }
-  if (backdrop === "globe" && globeReady) {
+  if (backdrop === "globe" && globe) {
     drawCover(ctx, globe);
     return;
   }
