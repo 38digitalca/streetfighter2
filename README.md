@@ -1,12 +1,14 @@
 # Cinder Alley
 
-An original two-player fighter for the browser. Create a room and send the link, play both fighters on one keyboard, or spar a practice partner.
+**Play the demo: [street-fighter-ii.fly.dev](https://street-fighter-ii.fly.dev)**
 
-The live build is [street-fighter-ii.fly.dev](https://street-fighter-ii.fly.dev).
+A two-player browser fighter. Create a room and send the link, play both fighters on one keyboard, or spar a practice partner. The roster is painted, character select sits on a world globe, and the front page is a full cast painting.
+
+**Please help enhance it.** Painters, designers, and programmers are welcome. Add poses, tune a special, build a stage, or improve online play. Read [CONTRIBUTING.md](CONTRIBUTING.md), open an issue, and send a pull request.
 
 This is an unofficial fan project. It is not made by or affiliated with Capcom. The on-screen title and fighter names refer to Street Fighter, so a public copy can be taken down. If you fork it, give the game and the fighters your own names.
 
-Cinder Alley borrows the rhythm of 1990s one-on-one arcade fighters: three rounds, a timer, specials, and a block that cares whether you are standing or crouching. The fighters, stage, and sounds are original. Every World Warrior uses a painted portrait on the select screen and a painted sprite in the match.
+The fight borrows the rhythm of 1990s one-on-one arcade fighters: three rounds, a timer, specials, and a block that cares whether you are standing or crouching. Every fighter uses a painted portrait on the select screen and a painted sprite in the match.
 
 ## Play
 
