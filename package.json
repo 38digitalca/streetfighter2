@@ -1,9 +1,9 @@
 {
-  "name": "cinder-alley",
+  "name": "streetfighter2",
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Cinder Alley — an original two-player browser fighter.",
+  "description": "Street Fighter 2 — a two-player browser fighter.",
   "scripts": {
     "dev": "concurrently -n server,web -c cyan,magenta \"tsx watch server/index.ts\" \"vite --host 127.0.0.1 --port 43123 --strictPort\"",
     "build": "vite build",

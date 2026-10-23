@@ -1,4 +1,4 @@
-# Cinder Alley
+# Street Fighter 2
 
 **Play the demo: [street-fighter-ii.fly.dev](https://street-fighter-ii.fly.dev)**
 

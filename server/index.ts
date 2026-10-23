@@ -322,7 +322,7 @@ export function startServer(port: number, host = "127.0.0.1"): Promise<Running> 
       return;
     }
     res.writeHead(200, { "content-type": "text/plain; charset=utf-8" });
-    res.end("Cinder Alley match server. Open the game through the dev site.");
+    res.end("Street Fighter 2 match server. Open the game through the dev site.");
   });
   const wss = new WebSocketServer({ server, path: "/ws" });
   const pulse = setInterval(() => {
@@ -388,6 +388,6 @@ if (import.meta.url === invoked) {
   const port = Number(process.env.PORT) || (prod ? 43123 : 43124);
   const host = process.env.HOST || (prod ? "0.0.0.0" : "127.0.0.1");
   void startServer(port, host).then((running) => {
-    console.log(`Cinder Alley match server on http://${host}:${running.port}`);
+    console.log(`Street Fighter 2 match server on http://${host}:${running.port}`);
   });
 }
