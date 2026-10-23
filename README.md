@@ -2,6 +2,10 @@
 
 An original two-player fighter for the browser. Create a room and send the link, play both fighters on one keyboard, or spar a practice partner.
 
+The live build is [street-fighter-ii.fly.dev](https://street-fighter-ii.fly.dev).
+
+This is an unofficial fan project. It is not made by or affiliated with Capcom. The on-screen title and fighter names refer to Street Fighter, so a public copy can be taken down. If you fork it, give the game and the fighters your own names.
+
 Cinder Alley borrows the rhythm of 1990s one-on-one arcade fighters: three rounds, a timer, specials, and a block that cares whether you are standing or crouching. The fighters, stage, and sounds are original. Every World Warrior uses a painted portrait on the select screen and a painted sprite in the match.
 
 ## Play
@@ -71,3 +75,12 @@ First to two rounds wins. A double KO gives the round to neither fighter. When t
 npm test
 npm run typecheck
 ```
+
+## Help enhance the game
+
+Ways to contribute are in [CONTRIBUTING.md](CONTRIBUTING.md). Useful places to start:
+
+- Painted poses live in `public/fighters/<id>/`. Wire a new file in `src/sprites.ts`.
+- Move speed, damage, and specials live in `shared/characters.ts`. The same numbers run on the server and in the browser.
+- Rooms and the WebSocket protocol live in `server/index.ts` and `shared/protocol.ts`.
+- The stage, HUD, select screen, and menus live in `src/`.
