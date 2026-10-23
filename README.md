@@ -2,7 +2,7 @@
 
 **Play the demo: [street-fighter-ii.fly.dev](https://street-fighter-ii.fly.dev)**
 
-A two-player browser fighter. Create a room and send the link, play both fighters on one keyboard, or spar a practice partner. The roster is painted, character select sits on a world globe, and the front page is a full cast painting.
+A two-player browser fighter. Create a room and send the link, play both fighters on one keyboard, or spar a practice partner. The roster is painted, character select sits on a world globe, and the intro opens on the player-select artwork.
 
 **Please help enhance it.** Painters, designers, and programmers are welcome. Add poses, tune a special, build a stage, or improve online play. Read [CONTRIBUTING.md](CONTRIBUTING.md), open an issue, and send a pull request.
 

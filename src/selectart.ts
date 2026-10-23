@@ -167,7 +167,7 @@ let poster: HTMLImageElement | null = null;
 void loadImage("/select/globe.jpg").then((img) => {
   globe = img;
 });
-void loadImage("/title/front.jpg").then((img) => {
+void loadImage("/title/intro.png").then((img) => {
   poster = img;
 });
 

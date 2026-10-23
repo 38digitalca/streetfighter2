@@ -30,7 +30,7 @@ npm run typecheck
 | `src/render.ts` | Stage and in-match drawing |
 | `src/selectart.ts`, `src/ui.ts`, `src/style.css` | Front page, character select, and menus |
 | `src/sprites.ts` | Which painted pose file each action uses |
-| `public/title/front.jpg` | Front-page wallpaper |
+| `public/title/intro.png` | Intro wallpaper |
 | `public/select/globe.jpg` | Character-select wallpaper |
 | `public/fighters/<id>/` | Portrait and fight poses |
 | `tests/` | Simulation and server tests |

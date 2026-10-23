@@ -258,9 +258,9 @@ label { display: grid; gap: 0.35rem; font-size: 0.86rem; font-weight: 600; margi
   width: 100%;
   margin: 0;
   text-align: center;
-  background: linear-gradient(to top, rgba(4, 8, 18, 0.88), rgba(4, 8, 18, 0));
+  background: linear-gradient(to top, #070b16 0 58px, rgba(7, 11, 22, 0) 92px);
   border: none;
-  padding: 42px 12px 14px;
+  padding: 28px 12px 12px;
 }
 .title.pixel h1,
 .title.pixel .kicker {
